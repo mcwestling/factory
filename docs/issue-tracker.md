@@ -63,56 +63,45 @@ Each product has an initiative with the same name as its Product label. Company 
 
 ## Repo routing
 
-A `` `[repo=owner/name]` `` tag in the issue description overrides the Product label. Write it as a code span; Linear escapes bare brackets to `\[repo=…\]`, which also counts.
+Routing lives in Linear, not here. Each Product label's description ends with `→ owner/name`, the repo its issues go to; a label for a product with no repo says so instead. To route a new product, create its Product label with that ending.
 
-| Product label       | Repo                                |
-| ------------------- | ----------------------------------- |
-| Factory             | `mcwestling/factory`                |
-| Opal                | `mcwestling/opal`                   |
-| Piumosso            | `mcwestling/piumosso`               |
-| Domino Night        | `mcwestling/domino-night`           |
-| ODOT                | `mcwestling/odot`                   |
-| aw.com              | `andrewwestling/andrewwestling.com` |
-| Music Library       | `andrewwestling/andrewwestling.com` |
-| Timeline            | None yet; needs a tag               |
-| No label and no tag | Unresolved; there is no default     |
+A `` `[repo=owner/name]` `` tag in the issue description overrides the label. Write it as a code span; Linear escapes bare brackets to `\[repo=…\]`, which also counts. An issue with neither is unresolved: there is no default repo.
 
 ## Dispatch targets
 
-| Label           | Use it when                                                                    |
-| --------------- | ------------------------------------------------------------------------------ |
-| `Conductor`     | `CONDUCTOR_WORKSPACE_ID` or `CONDUCTOR_WORKSPACE_PATH` is set (local or cloud) |
-| `Orca`          | `ORCA_WORKSPACE_ID`, or any other `ORCA_*` variable, is set                    |
-| `Claude`        | Claude Code outside Conductor and Orca                                         |
-| `Codex`         | Codex outside Conductor and Orca                                               |
-| `Linear/Cursor` | Cursor Cloud, delegated from Linear                                            |
-| `Linear/Codex`  | Codex, delegated from Linear                                                   |
+| Label           | Use it when                              |
+| --------------- | ---------------------------------------- |
+| `Orca`          | Any `ORCA_*` environment variable is set |
+| `Claude`        | Claude Code outside Orca                 |
+| `Codex`         | Codex outside Orca                       |
+| `Linear/Codex`  | Codex, delegated from Linear             |
+| `Linear/Cursor` | Cursor Cloud, delegated from Linear      |
 
-Detect the target from the host environment, not the model. Check Conductor first, then Orca.
+Detect the target from the host environment, not the model.
 
-**Target follows the model:** Cursor models (Composer, Grok) run on `Linear/Cursor`. Claude and GPT models run on `Orca`. **Default target:** a Cursor model on `Linear/Cursor`. `Orca` when the work needs a Claude or GPT model, a local stack, the maintainer in the session, or a tool-specific capability.
+**Default target:** `Orca`, with a Claude or GPT model. `Linear/Cursor` is optional, for Cursor models only.
 
 ## Preferred models
 
-- Claude Opus 5.5
-- GPT-5.6 Sol
-- GPT-5.6 Luna
-- GPT-6 Astra
-- Composer 2.5
-- Grok 4.6
+| Model           | Target          | Use it for                                                                     |
+| --------------- | --------------- | ------------------------------------------------------------------------------ |
+| Claude Opus 5.5 | `Orca`          | Judgment-heavy, cross-cutting or ambiguous work; the maintainer in the session |
+| GPT-6.1 Sol     | `Orca`          | Complex implementation and agentic work                                        |
+| GPT-6 Luna      | `Orca`          | Focused, pattern-following tickets where a good result is clear                |
+| Composer 2.5    | `Linear/Cursor` | Mechanical changes, when using Cursor                                          |
+| Grok 4.6        | `Linear/Cursor` | Mechanical changes, when using Cursor                                          |
 
 ## Views
 
-Shared views on the `DO` team. Find them by exact name with `list_custom_views`.
+The factory expects exactly these shared views on the `DO` team. Keep them, and find them by exact name with `list_custom_views`.
 
-| View                   | Shows                                                 |
-| ---------------------- | ----------------------------------------------------- |
-| `Ready to Dispatch`    | Todo, unassigned, unblocked implementation issues     |
-| `Decisions to Resolve` | Todo, unassigned, unblocked decision tickets in a map |
-| `Maps to Chart`        | Stub maps (projects) waiting to be charted            |
-| `In Progress: All`     | Issues in In Progress or In Review                    |
-| `In Progress: Agent`   | In-progress issues delegated to an agent              |
-| `By Product/Project`   | Issues grouped by Product, then project               |
+| View                  | Kind     | Filters                                                                                                        |
+| --------------------- | -------- | -------------------------------------------------------------------------------------------------------------- |
+| `Factory: Maps`       | Projects | Every map project; grouped by project status, so `Uncharted` maps waiting to be charted sit in their own group |
+| `Factory: Decisions`  | Issues   | Status `Todo`, no assignee, not blocked, a `wayfinder:` label, in a project                                    |
+| `Factory: Ready`      | Issues   | Status `Todo`, no assignee, not blocked, no `wayfinder:` label; grouped by Product, then project               |
+| `Factory: Agent Work` | Issues   | Status `In Progress`, delegated to an agent                                                                    |
+| `Factory: All Work`   | Issues   | Status `In Progress` or `In Review`                                                                            |
 
 ## Triage
 
