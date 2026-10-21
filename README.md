@@ -21,7 +21,7 @@ People who plan their work in Linear and want coding agents to do more of the bu
 
 - [Install the skills](#install)
 - [Adopt Factory in your own project](#adopting)
-- [An example settings file](docs/issue-tracker.md)
+- [McWestling's settings file, a worked example](docs/issue-tracker.md)
 - [License](LICENSE)
 
 ---

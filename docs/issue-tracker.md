@@ -7,7 +7,7 @@ The skills hold the procedure. This file holds only the values they look up, und
 ## Tracker
 
 - **Tool:** Linear, workspace **McWestling**.
-- **Access:** Linear MCP. In an Orca workspace, the `orca linear` CLI also qualifies. No other access path (browser, desktop app, direct API).
+- **Access:** Linear MCP only. In an Orca workspace, the `orca linear` CLI also qualifies.
 
 ## Team
 
@@ -51,7 +51,7 @@ Not used. Leave every issue at **No priority**.
 - **Dispatch target** (group, single-select): the tool doing the work. See [Dispatch targets](#dispatch-targets).
 - **Bug:** a concrete defect. A Triage item without it is a muse.
 - **Decision types:** `wayfinder:research`, `wayfinder:grilling`, `wayfinder:prototype`, `wayfinder:task`.
-- **Retired, never apply:** `ready-for-agent`, `ready-for-human`, `needs-triage`, `needs-info`, `wontfix`, `wayfinder:map`.
+- **Retired, never apply:** `ready-for-agent`, `ready-for-human`, `needs-triage`, `needs-info`, `wontfix`, `wayfinder:map`. Imported issues keep `legacy-status:wontfix`.
 
 ## Templates
 
@@ -90,7 +90,7 @@ A `` `[repo=owner/name]` `` tag in the issue description overrides the Product l
 
 Detect the target from the host environment, not the model. Check Conductor first, then Orca.
 
-**Target follows the model:** Cursor models (Composer, Grok) run on `Linear/Cursor`. Claude and GPT models run on `Orca`. Prefer a Cursor model on `Linear/Cursor` when one fits; use `Orca` for work that needs a Claude or GPT model, a local stack, the maintainer in the session, or a tool-specific capability.
+**Target follows the model:** Cursor models (Composer, Grok) run on `Linear/Cursor`. Claude and GPT models run on `Orca`. **Default target:** a Cursor model on `Linear/Cursor`. `Orca` when the work needs a Claude or GPT model, a local stack, the maintainer in the session, or a tool-specific capability.
 
 ## Preferred models
 
@@ -118,7 +118,7 @@ Shared views on the `DO` team. Find them by exact name with `list_custom_views`.
 
 - **Queue:** every `DO` issue in `Triage`, across all products.
 - **Look-back:** survey Done and Canceled issues from the last 90 days.
-- **Opal scope:** new Opal feature work stays in scope. Don't route it toward Piumosso just because Piumosso will replace Opal one day.
+- **Opal scope:** new Opal feature work is in scope; Piumosso replacing Opal one day is not a routing reason.
 
 ## Comment shape
 
@@ -134,11 +134,11 @@ Datelines in use:
 
 - **Triage route:** `YYYY-MM-DD — Triage: <Route>. <reason>. <links>`
 - **PR opened:** `YYYY-MM-DD — PR opened: <link>`
+- **Back to Triage:** `YYYY-MM-DD — Back to Triage: <reason>.`
 - **Decision resolved:** a `## Resolution (YYYY-MM-DD)` heading
-
-Kickoff prompts in comments go in a fenced `text` block, and never point at local-only paths.
+- **Kickoff prompt:** a fenced `text` block
 
 ## Pull requests
 
 - **Title:** a plain imperative subject ending with the issue id in parentheses, like `Fix the login redirect bug (DO-<number>)`.
-- **Review:** this repo has no PR autopilot. Open PRs as drafts; the maintainer marks them ready and merges.
+- **Review:** no PR autopilot in this repo. PRs open as drafts; the maintainer marks them ready and merges.
