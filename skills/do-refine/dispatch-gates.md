@@ -2,16 +2,16 @@
 
 An implementation issue may be dispatched only when it passes every gate below. Check them when slicing, when triage routes an issue straight to ready, and again before dispatch. An issue can sit in the ready status while blocked, but it can't be dispatched until its blockers close.
 
-| Gate                    | Passes when                                                                                                              |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| **Summary**             | One sentence says what's wrong, what's needed, or what to investigate                                                    |
-| **Context**             | Repro or background, likely paths, links to decisions, an explicit **Out of scope**, and a **Touches:** line             |
-| **Acceptance criteria** | Checkboxes, each testable, with verification commands wherever they aren't obvious                                       |
-| **Blocked by**          | `None`, or every blocker is closed                                                                                       |
-| **Human gates**         | No open interview with the user and no unresolved product decision                                                       |
-| **Size**                | Fits one PR. Use the repo's size budget if it sets one; otherwise about 400 changed lines of non-test code is a soft cap |
-| **Repo**                | Resolves to one repo per the tracker doc's **Repo routing**                                                              |
-| **Suggested dispatch**  | A target and model chosen per [brief-template.md](brief-template.md)                                                     |
+| Gate                    | Passes when                                                                                                         |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| **Summary**             | One sentence says what's wrong, what's needed, or what to investigate                                               |
+| **Context**             | Repro or background, likely paths, links to decisions, an explicit **Out of scope**, and a **Touches:** line        |
+| **Acceptance criteria** | Checkboxes, each testable, with verification commands wherever they aren't obvious                                  |
+| **Blocked by**          | `None`, or every blocker is done                                                                                    |
+| **Human gates**         | No open interview with the user and no unresolved product decision                                                  |
+| **Size**                | Fits one PR. Use the repo's size budget if it sets one; otherwise about 400 changed lines of app code is a soft cap |
+| **Repo**                | Resolves to one repo per the tracker doc's **Repo routing**                                                         |
+| **Suggested dispatch**  | A target and model chosen per [brief-template.md](brief-template.md)                                                |
 
 Decision tickets (`wayfinder:<type>`) are never dispatched, whatever gates they pass.
 

@@ -79,9 +79,9 @@ A map holds two kinds of issue. Both are flat issues in its project, and both st
 
 ### Decision tickets
 
-A decision ticket settles a question; it doesn't deliver build work. It carries exactly one `wayfinder:<type>` label (see [Ticket types](#ticket-types)), plus any label the tracker doc requires on every issue, such as a Product label. Never a readiness or triage label.
+A decision ticket settles a question; it doesn't deliver build work. It carries exactly one `wayfinder:<type>` label (see [Ticket types](#ticket-types)), plus the labels **Labels** puts on every product issue (for example a Product label). Never a label **Labels** marks as retired, and never a readiness or triage label.
 
-The body is one plain sentence saying what the ticket is, then the question. Size it to fit one agent session.
+The body is one plain sentence saying what the ticket is, then the question. Size it so one agent session (about 100K tokens) can settle it.
 
 ```markdown
 <One plain sentence.>
@@ -113,7 +113,7 @@ The **frontier** is the set of decision tickets that are open, unblocked and unc
 
 To **claim** a ticket, assign it to the person driving the map and move it to the in-progress status, before any other work, so parallel sessions skip it. The assignee is the claim: an open ticket with no assignee is free.
 
-People find the same sets through the shared views listed under **Views**. Look them up by exact name, never by URL.
+People see the same sets in the shared views under **Views**: one for ready implementation issues, one for decisions to resolve, one for maps still to chart. Look a view up by its exact name, never by URL.
 
 ## Ticket types
 
@@ -130,11 +130,11 @@ A task ticket is the one type that does rather than decides. It exists only to u
 
 ## Grilling
 
-Ask in **rounds**. A round holds every question whose prerequisites are settled, numbered, each with your recommended answer and worded so "yes" accepts it. Keep each one answerable in a tap or a short reply, so it works from a phone.
+Ask in **rounds**. Each round asks everything that no longer depends on an open answer. Number the questions and lead each with the answer you recommend, phrased so a plain "yes" takes it. The user may be on a phone, so a tap or a few words should answer any of them.
 
-1. Read the ticket or map and what it links: code paths, decision records, earlier comments. Look facts up yourself; only decisions go to the user.
+1. Read the ticket or map and what it links: code paths, decision records, earlier comments. Anything you can find out yourself, find out; the user only makes the calls.
 2. Ask the round. Use the `AskUserQuestion` tool where the client has it, otherwise ask in chat. Ask in a tracker comment only when nobody is in the session.
-3. Stop until the user answers.
+3. Wait for the answers before going further.
 4. Record the answers where they belong: the ticket's resolution comment, or the issue description.
 5. Work out what can be asked now, and run the next round. Finish when no open forks remain.
 
@@ -158,7 +158,7 @@ Choose where a piece of work goes by whether you can **state** it precisely now,
 
 Fog only gathers on the way to the destination. Work past the destination is **out of scope**, a different thing: you've decided this effort won't do it. It goes in the **Out of scope** section, never in **Not yet specified**, and it never turns into tickets. It comes back only if someone redraws the destination, and then as a new effort.
 
-When an existing ticket turns out to sit past the destination (mis-scoped when charting, or exposed by a resolution), set it to the canceled status and add one line to **Out of scope**: the gist, why it's out, and a link to the ticket. Keep it out of **Decisions so far**, which records the route actually taken.
+When an existing ticket turns out to sit past the destination (because charting drew the line wrong, or a later answer moved it), set it to the canceled status and add one line to **Out of scope**: the gist, why it's out, and a link to the ticket. Keep it out of **Decisions so far**, which records the route actually taken.
 
 ## Slicing
 
@@ -169,7 +169,7 @@ Slicing turns settled build work into implementation issues, one PR each. Slice 
 3. **Check with the user.** Show the slices as a numbered list: title, blocked by, what it delivers, what it touches. Ask whether the size is right, whether each blocker is real, and whether any slice should merge or split. Repeat until the user approves. Never publish a slice the user hasn't seen.
 4. **Publish**, blockers first. Create each issue in the map's project, in the ready status, with no parent and with the labels the tracker doc requires. Write the body from [brief-template.md](brief-template.md), applying the implementation template under **Templates** when there is one. Resolve its repo per **Repo routing**, and add a repo tag only when routing alone would get it wrong. Then wire `blocks` / `blockedBy` in a second pass, once every issue has a real id. Check each issue against [dispatch-gates.md](dispatch-gates.md). If it fails any gate other than open blockers, it isn't a slice yet: put it back in the fog, or turn the gap into a decision ticket.
 5. **README line.** If an issue completes a major feature of the product, add a one-line update to the product README's non-developer intro to that issue's brief (the template's **README** line). Most issues get none.
-6. **Record.** Remove each sliced patch from **Not yet specified**, so it lives only as its issues. Slices aren't decisions, so they stay out of **Decisions so far**.
+6. **Record.** Remove each sliced patch from **Not yet specified**, so it lives only as its issues. Slices aren't decisions, so they stay out of **Decisions so far**. If the map's charted status says nothing is sliced yet, move it to the one that says work is sliced.
 
 ## Choosing a mode
 
@@ -199,7 +199,7 @@ The user names an idea or a map (by URL or name), and maybe a ticket. Pick the m
 1. **Load the map:** the project summary and description, not every ticket.
 2. **Choose and claim.** Take the ticket the user named, or else the first one on the frontier. Claim it before doing anything else. If it's the first claim on the map, set the project to a started status.
 3. **Resolve it** the way its `wayfinder:` label says (see [Ticket types](#ticket-types)). Fetch other tickets' full bodies and resolutions only when you need them. Call the skills that **Notes** names; when unsure, call "grilling" and "domain-modeling".
-4. **Record it.** Post the answer as the decision-resolved comment per **Comment shape** (a `## Resolution (YYYY-MM-DD)` heading), set the ticket to the done status, and patch one gist line into **Decisions so far**.
+4. **Record it.** Post the answer as the **Decision resolved** comment per **Comment shape**, set the ticket to the done status, and patch one gist line into **Decisions so far**.
 5. **Follow through.**
    - Add any new decision tickets the answer surfaced (create, then wire).
    - Turn fog that's now clear into tickets, and remove it from **Not yet specified**.
@@ -217,7 +217,7 @@ The user names an idea or a map (by URL or name), and maybe a ticket. Pick the m
 
 End every session by listing what changed, by name: tickets resolved, created or canceled, and issues sliced. Then add **What you can do next**, with a link on every line:
 
-- **Dispatch now:** each unblocked, ready implementation issue on the map, with its Suggested dispatch and a prompt to paste for that target. For a target that is delegated from inside the tracker, say so (for example, "delegate to Cursor from the issue"). Otherwise give `/do-implement ABC-123`, to run on the named target (for example, an Orca workspace). Compare the issues' **Touches:** lines, flag pairs that overlap, and say which to run first.
+- **Dispatch now:** each unblocked, ready implementation issue on the map, with its Suggested dispatch and a prompt to paste for that target. For a target that is delegated from inside the tracker, say so (for example, "delegate to Cursor from the issue"). Otherwise give the **Kickoff prompt** per **Comment shape** (for example `/do-implement ABC-123`), to run on the named target (for example, an Orca workspace). Compare the issues' **Touches:** lines, flag pairs that overlap, and say which to run first.
 - **Refine next:** the next decision ticket on the frontier, with `/do-refine <map URL>` to paste into a fresh session. Name any research tickets still running.
 - **Waiting on you:** HITL tickets and open questions.
 
