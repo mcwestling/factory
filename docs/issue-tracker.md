@@ -74,24 +74,25 @@ Each product has an initiative with the same name as its Product label. Its desc
 | `Orca`          | Any `ORCA_*` environment variable is set |
 | `Claude`        | Claude Code outside Orca                 |
 | `Codex`         | Codex outside Orca                       |
+| `Orca/Cursor`   | Cursor Cloud, launched from Orca         |
 | `Linear/Cursor` | Cursor Cloud, delegated from Linear      |
 
 The label records where the session runs, not the model. Set it when work starts, detected from the host environment. The issue's Suggested dispatch line is the plan; the label records what actually ran. Work started from Linear's Agent dropdown runs in Orca, so it gets `Orca`.
 
-**Default target:** `Orca`, with a Claude or GPT model. `Linear/Cursor` is optional, for Cursor models only.
+**Default target:** `Orca`, with a Claude or GPT model. Cursor models run as `Orca/Cursor`. `Linear/Cursor` is legacy: Factory Dispatch replaces every agent integration in Linear, and the label is retired once it ships.
 
 ## Preferred models
 
 **Checked:** 2026-10-22, against the vendor pages under Sources. Re-check when this date is over 90 days old or a listed model retires.
 
-| Model            | Target          | Use it for                                                                     |
-| ---------------- | --------------- | ------------------------------------------------------------------------------ |
-| Claude Opus 5.5  | `Orca`          | Judgment-heavy, cross-cutting or ambiguous work; the maintainer in the session |
-| Claude Fable 5.1 | `Orca`          | Long-horizon or hardest work, when Opus 5.5 at higher effort falls short       |
-| GPT-6.1 Sol      | `Orca`          | Complex implementation and agentic work                                        |
-| GPT-6 Luna       | `Orca`          | Focused, pattern-following tickets where a good result is clear                |
-| Composer 2.5     | `Linear/Cursor` | Mechanical changes, when using Cursor                                          |
-| Grok 4.7         | `Linear/Cursor` | Mechanical changes, when using Cursor                                          |
+| Model            | Target        | Use it for                                                                     |
+| ---------------- | ------------- | ------------------------------------------------------------------------------ |
+| Claude Opus 5.5  | `Orca`        | Judgment-heavy, cross-cutting or ambiguous work; the maintainer in the session |
+| Claude Fable 5.1 | `Orca`        | Long-horizon or hardest work, when Opus 5.5 at higher effort falls short       |
+| GPT-6.1 Sol      | `Orca`        | Complex implementation and agentic work                                        |
+| GPT-6 Luna       | `Orca`        | Focused, pattern-following tickets where a good result is clear                |
+| Composer 2.5     | `Orca/Cursor` | Mechanical changes, when using Cursor                                          |
+| Grok 4.7         | `Orca/Cursor` | Mechanical changes, when using Cursor                                          |
 
 **Sources:**
 
