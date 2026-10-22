@@ -46,7 +46,6 @@ Not used. Leave every issue at **No priority**.
 ## Labels
 
 - **Product** (group, single-select): the product an issue belongs to; matches its initiative.
-- **Repo** (group, single-select): the repo an issue's work lands in, named `owner/name`. See [Repo routing](#repo-routing).
 - **Dispatch target** (group, single-select): the tool doing the work. See [Dispatch targets](#dispatch-targets).
 - **Bug:** a concrete defect. A Triage item without it is a muse.
 - **Decision types:** `wayfinder:research`, `wayfinder:grilling`, `wayfinder:prototype`, `wayfinder:task`.
@@ -58,13 +57,15 @@ Not used. Leave every issue at **No priority**.
 
 ## Initiatives
 
-Each product has an initiative with the same name as its Product label. Company work has no product initiative.
+Each product has an initiative with the same name as its Product label. Its description opens with a `Repo:` line; see [Repo routing](#repo-routing). Company work has no product initiative.
 
 ## Repo routing
 
-An issue's repo is its **Repo** label, such as `Repo › mcwestling/opal`. Every dispatchable issue carries one. To add a repo, create a label with its `owner/name` in the Repo group.
-
-A `` `[repo=owner/name]` `` tag in the issue description overrides the label. Write it as a code span; Linear escapes bare brackets to `\[repo=…\]`, which also counts. An issue with neither is unresolved: there is no default repo.
+- **Source:** each product initiative's description opens with exactly `Repo: owner/name`, or `Repo: none` for a product with no repo yet. Several products may share a repo. This is the only product-to-repo mapping.
+- **On the issue:** a `` `[repo=owner/name]` `` tag in the issue description, written as a code span. Linear escapes bare brackets to `\[repo=…\]`, which also counts. It is the same syntax Cursor's Linear integration reads, and it overrides everything else.
+- **Lookup:** Product label → the initiative with the same name → its `Repo:` line. One hop; never inferred from anything else.
+- **Cross-check:** PRs already linked to other issues of the same product. A mismatch stops the work.
+- **Unresolved:** no tag and `Repo: none` (or no `Repo:` line). There is no default repo.
 
 ## Dispatch targets
 
