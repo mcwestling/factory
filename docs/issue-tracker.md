@@ -17,29 +17,27 @@ The skills hold the procedure. This file holds only the values they look up, und
 
 ## Issue statuses
 
-| Status        | Meaning                                                  |
-| ------------- | -------------------------------------------------------- |
-| `Triage`      | Captured, not yet reviewed. Default for new issues.      |
-| `Backlog`     | In a map but not ready yet.                              |
-| `Todo`        | Ready. Blockers still decide whether work can start.     |
-| `In Progress` | Claimed, including draft PRs.                            |
-| `In Review`   | PR marked ready. Set only by Linear's GitHub automation. |
-| `Done`        | Decision resolved, or PR merged.                         |
-| `Canceled`    | Declined or won't do.                                    |
-| `Duplicate`   | Duplicate of another issue.                              |
+| Status        | Meaning                                                                                                                      |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `Triage`      | Captured, not yet reviewed. Default for new issues.                                                                          |
+| `Backlog`     | In a map but not ready yet.                                                                                                  |
+| `Todo`        | Ready. Blockers still decide whether work can start.                                                                         |
+| `In Progress` | Claimed, including draft PRs.                                                                                                |
+| `In Review`   | PR out of draft and ready to merge. A draft PR stays `In Progress`. Set only by Linear's GitHub automation, never by agents. |
+| `Done`        | Decision resolved, or PR merged.                                                                                             |
+| `Canceled`    | Declined or won't do.                                                                                                        |
+| `Duplicate`   | Duplicate of another issue.                                                                                                  |
 
 ## Project statuses
 
-| Status      | Meaning                               |
-| ----------- | ------------------------------------- |
-| `Uncharted` | Stub map from triage, not yet charted |
-| `Idea`      | Charted, not yet planned              |
-| `Planned`   | Charted and planned                   |
-| `Ongoing`   | Work has started                      |
-| `Done`      | Destination reached                   |
-| `Won't Do`  | Abandoned                             |
-
-**Standing non-map projects:** Opal Releases.
+| Status      | Meaning                                                                       |
+| ----------- | ----------------------------------------------------------------------------- |
+| `Uncharted` | Stub map from triage, not yet charted                                         |
+| `Idea`      | Charted with a Destination; decisions still open, nothing sliced              |
+| `Planned`   | Enough decisions made that implementation issues are sliced or ready to slice |
+| `Ongoing`   | Work has started                                                              |
+| `Done`      | Destination reached                                                           |
+| `Won't Do`  | Abandoned                                                                     |
 
 ## Priority
 
@@ -74,10 +72,9 @@ A `` `[repo=owner/name]` `` tag in the issue description overrides the label. Wr
 | `Orca`          | Any `ORCA_*` environment variable is set |
 | `Claude`        | Claude Code outside Orca                 |
 | `Codex`         | Codex outside Orca                       |
-| `Linear/Codex`  | Codex, delegated from Linear             |
 | `Linear/Cursor` | Cursor Cloud, delegated from Linear      |
 
-Detect the target from the host environment, not the model.
+The label records where the session runs, not the model. Set it when work starts, detected from the host environment. The issue's Suggested dispatch line is the plan; the label records what actually ran. Work started from Linear's Agent dropdown runs in Orca, so it gets `Orca`.
 
 **Default target:** `Orca`, with a Claude or GPT model. `Linear/Cursor` is optional, for Cursor models only.
 
@@ -107,7 +104,6 @@ The factory expects exactly these shared views on the `DO` team. Keep them, and 
 
 - **Queue:** every `DO` issue in `Triage`, across all products.
 - **Look-back:** survey Done and Canceled issues from the last 90 days.
-- **Opal scope:** new Opal feature work is in scope; Piumosso replacing Opal one day is not a routing reason.
 
 ## Comment shape
 
@@ -125,9 +121,10 @@ Datelines in use:
 - **PR opened:** `YYYY-MM-DD — PR opened: <link>`
 - **Back to Triage:** `YYYY-MM-DD — Back to Triage: <reason>.`
 - **Decision resolved:** a `## Resolution (YYYY-MM-DD)` heading
-- **Kickoff prompt:** a fenced `text` block
+- **Kickoff prompt:** a fenced `text` block reading `To kick this off, run /do-implement DO-<number>`
 
 ## Pull requests
 
 - **Title:** a plain imperative subject ending with the issue id in parentheses, like `Fix the login redirect bug (DO-<number>)`.
+- **Branch:** exactly the issue's Linear branch name (`gitBranchName` from `get_issue`). Never invent or prefix one.
 - **Review:** no PR autopilot in this repo. PRs open as drafts; the maintainer marks them ready and merges.
