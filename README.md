@@ -4,14 +4,14 @@ Factory turns ideas into finished software changes, with coding agents doing the
 
 ## What it does
 
-Factory is a set of workflow skills for coding agents such as Claude Code, Codex and Cursor. Together they cover the path from a rough idea to a merged change:
+Factory is a set of workflow skills for coding agents. Together they cover the path from a rough idea to a merged change:
 
 - **Capture:** turn photos of handwritten sticky notes, or dictated thoughts, into tickets in Linear.
 - **Triage:** review new tickets with you and route each one: build it, plan it further, or drop it.
 - **Refine:** turn a big goal into a map of the decisions still open, settle them with you one at a time, then slice the settled work into small, clearly written tickets.
 - **Implement:** hand a ticket to an agent, which builds it, checks its own work and opens a pull request for you to review.
 
-Your project's settings, such as team names, labels and where each product's code lives, live in one short file, so the same skills work in any project.
+Your project's settings, such as team names, labels and each product's repo, live in one short file, so the same skills work in any project.
 
 ## Who it's for
 
