@@ -59,7 +59,13 @@ The skills link to each other, so install all of them.
 
 ## Adopting
 
-To adopt Factory, [install the skills](#install), then run `/do-factory-setup` in your repo. It writes `docs/issue-tracker.md`, the file the other skills read your workspace values from.
+To adopt Factory, [install the skills](#install), then run this in your coding agent, in your repo:
+
+```text
+/do-factory-setup
+```
+
+It writes `docs/issue-tracker.md`, the file the other skills read your workspace values from.
 
 To set it up by hand instead, copy [McWestling's `docs/issue-tracker.md`](docs/issue-tracker.md) and replace the values.
 
