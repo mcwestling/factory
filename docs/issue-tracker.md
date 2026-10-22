@@ -45,7 +45,8 @@ Not used. Leave every issue at **No priority**.
 
 ## Labels
 
-- **Product** (group, single-select): routes an issue to its repo. See [Repo routing](#repo-routing).
+- **Product** (group, single-select): the product an issue belongs to; matches its initiative.
+- **Repo** (group, single-select): the repo an issue's work lands in, named `owner/name`. See [Repo routing](#repo-routing).
 - **Dispatch target** (group, single-select): the tool doing the work. See [Dispatch targets](#dispatch-targets).
 - **Bug:** a concrete defect. A Triage item without it is a muse.
 - **Decision types:** `wayfinder:research`, `wayfinder:grilling`, `wayfinder:prototype`, `wayfinder:task`.
@@ -61,7 +62,7 @@ Each product has an initiative with the same name as its Product label. Company 
 
 ## Repo routing
 
-Routing lives in Linear, not here. Each Product label's description ends with `→ owner/name`, the repo its issues go to; a label for a product with no repo says so instead. To route a new product, create its Product label with that ending.
+An issue's repo is its **Repo** label, such as `Repo › mcwestling/opal`. Every dispatchable issue carries one. To add a repo, create a label with its `owner/name` in the Repo group.
 
 A `` `[repo=owner/name]` `` tag in the issue description overrides the label. Write it as a code span; Linear escapes bare brackets to `\[repo=…\]`, which also counts. An issue with neither is unresolved: there is no default repo.
 
