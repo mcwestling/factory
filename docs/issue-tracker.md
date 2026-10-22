@@ -69,30 +69,29 @@ Each product has an initiative with the same name as its Product label. Its desc
 
 ## Dispatch targets
 
-| Label           | Use it when                              |
-| --------------- | ---------------------------------------- |
-| `Orca`          | Any `ORCA_*` environment variable is set |
-| `Claude`        | Claude Code outside Orca                 |
-| `Codex`         | Codex outside Orca                       |
-| `Orca/Cursor`   | Cursor Cloud, launched from Orca         |
-| `Linear/Cursor` | Cursor Cloud, delegated from Linear      |
+| Label           | Use it when                                                                      |
+| --------------- | -------------------------------------------------------------------------------- |
+| `Orca`          | Dispatched from Orca, including Cursor Cloud agents it launches                  |
+| `Claude`        | Claude Code outside Orca                                                         |
+| `Codex`         | Codex outside Orca                                                               |
+| `Linear/Cursor` | Cursor Cloud, delegated from Linear. Legacy; retired when Factory Dispatch ships |
 
-The label records where the session runs, not the model. Set it when work starts, detected from the host environment. The issue's Suggested dispatch line is the plan; the label records what actually ran. Work started from Linear's Agent dropdown runs in Orca, so it gets `Orca`.
+The label records where the work was dispatched from, not where the session runs or which model ran. Set it when work starts: a session with any `ORCA_*` environment variable set is `Orca`, and Orca sets the label itself on the Cursor Cloud agents it launches. The issue's Suggested dispatch line is the plan; the label records what actually ran.
 
-**Default target:** `Orca`, with a Claude or GPT model. Cursor models run as `Orca/Cursor`. `Linear/Cursor` is legacy: Factory Dispatch replaces every agent integration in Linear, and the label is retired once it ships.
+**Default target:** `Orca`, for every model below.
 
 ## Preferred models
 
 **Checked:** 2026-10-22, against the vendor pages under Sources. Re-check when this date is over 90 days old or a listed model retires.
 
-| Model            | Target        | Use it for                                                                     |
-| ---------------- | ------------- | ------------------------------------------------------------------------------ |
-| Claude Opus 5.5  | `Orca`        | Judgment-heavy, cross-cutting or ambiguous work; the maintainer in the session |
-| Claude Fable 5.1 | `Orca`        | Long-horizon or hardest work, when Opus 5.5 at higher effort falls short       |
-| GPT-6.1 Sol      | `Orca`        | Complex implementation and agentic work                                        |
-| GPT-6 Luna       | `Orca`        | Focused, pattern-following tickets where a good result is clear                |
-| Composer 2.5     | `Orca/Cursor` | Mechanical changes, when using Cursor                                          |
-| Grok 4.7         | `Orca/Cursor` | Mechanical changes, when using Cursor                                          |
+| Model            | Use it for                                                                     |
+| ---------------- | ------------------------------------------------------------------------------ |
+| Claude Opus 5.5  | Judgment-heavy, cross-cutting or ambiguous work; the maintainer in the session |
+| Claude Fable 5.1 | Long-horizon or hardest work, when Opus 5.5 at higher effort falls short       |
+| GPT-6.1 Sol      | Complex implementation and agentic work                                        |
+| GPT-6 Luna       | Focused, pattern-following tickets where a good result is clear                |
+| Composer 2.5     | Mechanical changes, as a Cursor Cloud agent                                    |
+| Grok 4.7         | Mechanical changes, as a Cursor Cloud agent                                    |
 
 **Sources:**
 
