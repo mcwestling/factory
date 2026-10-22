@@ -92,13 +92,13 @@ The label records where the session runs, not the model. Set it when work starts
 
 The factory expects exactly these shared views on the `DO` team. Keep them, and find them by exact name with `list_custom_views`.
 
-| View                  | Kind     | Filters                                                                                                             |
-| --------------------- | -------- | ------------------------------------------------------------------------------------------------------------------- |
-| `Factory: Maps`       | Projects | Project status not `Done` or `Won't Do`; grouped by initiative (product), sub-grouped and ordered by project status |
-| `Factory: Decisions`  | Issues   | Status `Todo`, no assignee, not blocked, a `wayfinder:` label, in a project                                         |
-| `Factory: Ready`      | Issues   | Status `Todo`, no assignee, not blocked, no `wayfinder:` label; grouped by Product, then project                    |
-| `Factory: Agent Work` | Issues   | Status `In Progress`, delegated to an agent                                                                         |
-| `Factory: All Work`   | Issues   | Status `In Progress` or `In Review`                                                                                 |
+| View                  | Kind     | Filters                                                                                                                                       |
+| --------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Factory: Maps`       | Projects | Project status not `Done` or `Won't Do`; grouped by initiative (product), sub-grouped and ordered by project status                           |
+| `Factory: Decisions`  | Issues   | Status `Todo`, no assignee, not blocked, a `wayfinder:` label, in a project                                                                   |
+| `Factory: Ready`      | Issues   | Status `Todo`, no assignee, not blocked, no `wayfinder:` label; grouped by Product, then project                                              |
+| `Factory: Agent Work` | Issues   | Status `In Progress` or `In Review`, and either delegated to an agent or carrying a `Dispatch target` label; grouped by Product, then project |
+| `Factory: All Work`   | Issues   | Status `In Progress` or `In Review`                                                                                                           |
 
 ## Triage
 
