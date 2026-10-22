@@ -11,7 +11,7 @@ Factory is a set of workflow skills for coding agents. Together they cover the p
 - **Refine:** turn a big goal into a map of the decisions still open, settle them with you one at a time, then slice the settled work into small, clearly written tickets.
 - **Implement:** hand a ticket to an agent, which builds it, checks its own work and opens a pull request for you to review.
 
-Your project's settings, such as team names, labels and each product's repo, live in one short file, so the same skills work in any project.
+Your project's settings, such as team names, labels and statuses, live in one short file, so the same skills work in any project.
 
 ## Who it's for
 
