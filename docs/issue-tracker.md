@@ -95,13 +95,13 @@ Detect the target from the host environment, not the model.
 
 The factory expects exactly these shared views on the `DO` team. Keep them, and find them by exact name with `list_custom_views`.
 
-| View                  | Kind     | Filters                                                                                                        |
-| --------------------- | -------- | -------------------------------------------------------------------------------------------------------------- |
-| `Factory: Maps`       | Projects | Every map project; grouped by project status, so `Uncharted` maps waiting to be charted sit in their own group |
-| `Factory: Decisions`  | Issues   | Status `Todo`, no assignee, not blocked, a `wayfinder:` label, in a project                                    |
-| `Factory: Ready`      | Issues   | Status `Todo`, no assignee, not blocked, no `wayfinder:` label; grouped by Product, then project               |
-| `Factory: Agent Work` | Issues   | Status `In Progress`, delegated to an agent                                                                    |
-| `Factory: All Work`   | Issues   | Status `In Progress` or `In Review`                                                                            |
+| View                  | Kind     | Filters                                                                                                             |
+| --------------------- | -------- | ------------------------------------------------------------------------------------------------------------------- |
+| `Factory: Maps`       | Projects | Project status not `Done` or `Won't Do`; grouped by initiative (product), sub-grouped and ordered by project status |
+| `Factory: Decisions`  | Issues   | Status `Todo`, no assignee, not blocked, a `wayfinder:` label, in a project                                         |
+| `Factory: Ready`      | Issues   | Status `Todo`, no assignee, not blocked, no `wayfinder:` label; grouped by Product, then project                    |
+| `Factory: Agent Work` | Issues   | Status `In Progress`, delegated to an agent                                                                         |
+| `Factory: All Work`   | Issues   | Status `In Progress` or `In Review`                                                                                 |
 
 ## Triage
 
