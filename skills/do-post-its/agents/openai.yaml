@@ -1,5 +1,5 @@
 interface:
   display_name: "Do Post-its"
-  short_description: "Turn photos of handwritten notes into Triage muses"
+  short_description: "Turn photos of handwritten notes, or dictation, into Triage muses"
 policy:
   allow_implicit_invocation: true

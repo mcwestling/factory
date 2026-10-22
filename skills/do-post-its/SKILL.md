@@ -16,8 +16,8 @@ The procedure lives here; the workspace values live in the repo's tracker doc. F
 - **Tracker:** the tool, and how to reach it.
 - **Team:** the team the muses go to.
 - **Issue statuses:** the names for Triage and Backlog.
-- **Labels:** the Product labels and the Bug label.
-- **Repo routing:** which product a note belongs to, when it isn't the repo you're in.
+- **Labels:** the Product labels, and the Bug label that marks a defect; a Triage item without it is a muse.
+- **Repo routing:** which product maps to which repo, to tell which product the repo you're in belongs to.
 
 Use only what the doc says. Where a value you need is missing (no doc, no team, no Product labels), ask the user, use the answer for this run, and offer to add it to the doc or to run `do-factory-setup`.
 
@@ -59,7 +59,7 @@ Create the muses in parallel. Each one gets:
 - **Status:** Triage.
 - **Title:** a short imperative in plain words ("Combine the admin calendar and events pages"), not the note's shorthand.
 - **Labels:** a Product label when the product is obvious, and the Bug label when the note describes a concrete defect. Nothing else: never create a label, never add area labels.
-- **Nothing more:** leave priority, assignee, project, estimate, template and any dispatch line unset, and skip the implementation-issue front door. Refinement adds those later.
+- **Nothing more:** leave priority, assignee, project, estimate, template and any suggested-dispatch line unset. Those belong to implementation issues, which refinement writes later.
 - **Body:**
 
   ```markdown
@@ -78,10 +78,10 @@ Some trackers escape square brackets on save, so describe a sketch in words rath
 
 ### 6. Report
 
-Reply with one table, grouped by source note, listing each new or commented issue as `ABC-123 title`. Then name any clusters you noticed (items that overlap, or might merge into a bigger piece of work) as input for triage. Don't act on them.
+Reply with one table, grouped by source note, listing each new issue as `ABC-123 title`. Then name any clusters you noticed (items that overlap, or might merge into a bigger piece of work) as input for triage. Don't act on them.
 
 ## Boundaries
 
 - Never move an issue out of Triage, and never accept or decline one. That's the user's call in triage review.
 - Never set priority, even when a note says "urgent"; quote the word in the body.
-- When a note belongs to another product, file it with that product's label, per **Repo routing**. When the product is unclear, ask.
+- When a note is about a different product or repo than the one you're in, file it with that product's label. When the product is unclear, ask.
