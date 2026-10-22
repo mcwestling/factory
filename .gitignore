@@ -1,0 +1,12 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Env files
+.env
+.env.*
+!.env.example
+
+# Real config: commit the *.example beside it, never the real file
+*.local
+*.local.*
