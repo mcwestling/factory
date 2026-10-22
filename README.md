@@ -65,7 +65,7 @@ To adopt Factory, [install the skills](#install), then run this in your coding a
 /do-factory-setup
 ```
 
-It writes `docs/issue-tracker.md`, the file the other skills read your workspace values from.
+It writes `docs/issue-tracker.md`, the file the other skills read your workspace values from, and points `AGENTS.md` at it. If your README has no plain-language intro yet, it drafts one for you to approve.
 
 To set it up by hand instead, copy [McWestling's `docs/issue-tracker.md`](docs/issue-tracker.md) and replace the values.
 
