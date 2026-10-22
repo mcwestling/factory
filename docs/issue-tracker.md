@@ -80,13 +80,22 @@ The label records where the session runs, not the model. Set it when work starts
 
 ## Preferred models
 
-| Model           | Target          | Use it for                                                                     |
-| --------------- | --------------- | ------------------------------------------------------------------------------ |
-| Claude Opus 5.5 | `Orca`          | Judgment-heavy, cross-cutting or ambiguous work; the maintainer in the session |
-| GPT-6.1 Sol     | `Orca`          | Complex implementation and agentic work                                        |
-| GPT-6 Luna      | `Orca`          | Focused, pattern-following tickets where a good result is clear                |
-| Composer 2.5    | `Linear/Cursor` | Mechanical changes, when using Cursor                                          |
-| Grok 4.6        | `Linear/Cursor` | Mechanical changes, when using Cursor                                          |
+**Checked:** 2026-10-22, against the vendor pages under Sources. Re-check when this date is over 90 days old or a listed model retires.
+
+| Model            | Target          | Use it for                                                                     |
+| ---------------- | --------------- | ------------------------------------------------------------------------------ |
+| Claude Opus 5.5  | `Orca`          | Judgment-heavy, cross-cutting or ambiguous work; the maintainer in the session |
+| Claude Fable 5.1 | `Orca`          | Long-horizon or hardest work, when Opus 5.5 at higher effort falls short       |
+| GPT-6.1 Sol      | `Orca`          | Complex implementation and agentic work                                        |
+| GPT-6 Luna       | `Orca`          | Focused, pattern-following tickets where a good result is clear                |
+| Composer 2.5     | `Linear/Cursor` | Mechanical changes, when using Cursor                                          |
+| Grok 4.7         | `Linear/Cursor` | Mechanical changes, when using Cursor                                          |
+
+**Sources:**
+
+- Claude: <https://platform.claude.com/docs/en/about-claude/models/overview>
+- Codex: <https://developers.openai.com/codex/models>
+- Cursor: <https://cursor.com/docs/models>
 
 ## Views
 
