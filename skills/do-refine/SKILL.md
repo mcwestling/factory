@@ -14,7 +14,7 @@ This skill needs its sibling skills installed (`do-triage`, `do-implement` and t
 
 ## Rules for every session
 
-- **Plan only.** A session settles decisions and writes implementation issues; it never builds the deliverable. When you feel the urge to start building, that is the cue to slice. A map's **Notes** may override this for its own effort.
+- **Plan only.** A session settles decisions and writes implementation issues; it never builds the deliverable. When you feel the urge to start building, that is the cue to slice. A map's **Notes** may override this for its own effort. The one exception: when the user asks for it, a resolve session may make a small non-code artifact the decision itself names (a doc, a tracker setting) and link it from the ticket. Code, or anything bigger, is still an implementation issue.
 - **Names, not ids.** When you talk about a map or ticket, use its title with the link inside it. Never hand the user a list of bare ids.
 - **One decision per session.** Resolve at most one decision ticket per session. Research tickets are the exception: they run in parallel subagents.
 - **Others are editing too.** Several sessions may work one map at once. Re-read an issue before you change it if time has passed, and patch descriptions instead of rewriting them.
@@ -111,7 +111,7 @@ The **frontier** is the set of decision tickets that are open, unblocked and unc
 2. Keep those with a `wayfinder:` label.
 3. Fetch each with its relations, and drop any that has an open blocker.
 
-To **claim** a ticket, assign it to the person driving the map and move it to the in-progress status, before any other work, so parallel sessions skip it. The assignee is the claim: an open ticket with no assignee is free.
+To **claim** a ticket, assign it to the person driving the map, move it to the in-progress status and set its dispatch target label per **Dispatch targets**, before any other work, so parallel sessions skip it and the claim shows up as work in progress. The assignee is the claim: an open ticket with no assignee is free.
 
 People see the same sets in the shared views under **Views**: one for ready implementation issues, one for decisions to resolve, one for maps still to chart. Look a view up by its exact name, never by URL.
 
@@ -121,9 +121,9 @@ Each decision ticket is **HITL** (worked live with a person who answers for them
 
 | Label                 | Mode        | Resolve it by                                                                                                                                                                                                                                                                                     |
 | --------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `wayfinder:research`  | AFK         | A subagent that calls the Skill tool with "research", to find a fact outside this checkout: docs, third-party APIs, knowledge bases.                                                                                                                                                              |
+| `wayfinder:research`  | AFK         | A subagent that calls the Skill tool with "research", to find a fact outside this checkout: docs, third-party APIs, knowledge bases. The resolution states every precondition the answer hangs on (a paid plan, a license, an account, a cost), not only the research branch.                                                                                                                                                              |
 | `wayfinder:prototype` | HITL        | Calling the Skill tool with "prototype" to make something rough and concrete to react to (an outline, a stub, a bit of UI or logic). Use it when the question is how something should look or behave. Link the prototype.                                                                         |
-| `wayfinder:grilling`  | HITL        | Conversation, in rounds (see [Grilling](#grilling)). Call the Skill tool for "grilling" and for "domain-modeling". The default type.                                                                                                                                                              |
+| `wayfinder:grilling`  | HITL        | Conversation, in rounds (see [Grilling](#grilling)). Call the Skill tool for "grilling", and also for "domain-modeling" when the decision introduces or changes domain terms. The default type.                                                                                                                                                              |
 | `wayfinder:task`      | HITL or AFK | Doing the manual work a decision is waiting on: sign up for a service, get access, move data so its shape is visible. Do it yourself where you can; otherwise give the user an exact checklist. Record what was done and any facts later tickets need (where credentials live, new URLs, counts). |
 
 A task ticket is the one type that does rather than decides. It exists only to unblock a decision. Work that delivers the destination is an implementation issue, not a task.
@@ -137,6 +137,8 @@ Ask in **rounds**. Each round asks everything that no longer depends on an open 
 3. Wait for the answers before going further.
 4. Record the answers where they belong: the ticket's resolution comment, or the issue description.
 5. Work out what can be asked now, and run the next round. Finish when no open forks remain.
+
+Recommend the lightest option that meets the need the user stated, and offer heavier ones only as alternatives. "Don't do this" is always a possible answer: offer it when the cost looks out of proportion to the need.
 
 Grilling settles scope; it never starts the build.
 
@@ -184,7 +186,7 @@ The user names an idea or a map (by URL or name), and maybe a ticket. Pick the m
 
 ### Chart a map
 
-1. **Name the destination.** Call the Skill tool for "grilling" and for "domain-modeling" to settle what the map is heading for. Do this first; it fixes the scope.
+1. **Name the destination.** Call the Skill tool for "grilling" (and for "domain-modeling" when the effort brings new domain terms) to settle what the map is heading for. Do this first; it fixes the scope.
 2. **Survey the way.** Grill again, broad rather than deep: cover the whole space to surface the open decisions, the build work and the first steps that can be taken now. If nothing is left open, skip decision tickets: make the map with an empty frontier and go straight to [Slicing](#slicing) in this session.
 3. **Make the map.** Create the project with its summary and description: Destination and Notes filled in, Decisions so far empty, fog sketched into **Not yet specified**, in the product's initiative, with a charted status.
 
@@ -198,7 +200,7 @@ The user names an idea or a map (by URL or name), and maybe a ticket. Pick the m
 
 1. **Load the map:** the project summary and description, not every ticket.
 2. **Choose and claim.** Take the ticket the user named, or else the first one on the frontier. Claim it before doing anything else. If it's the first claim on the map, set the project to a started status.
-3. **Resolve it** the way its `wayfinder:` label says (see [Ticket types](#ticket-types)). Fetch other tickets' full bodies and resolutions only when you need them. Call the skills that **Notes** names; when unsure, call "grilling" and "domain-modeling".
+3. **Resolve it** the way its `wayfinder:` label says (see [Ticket types](#ticket-types)). Fetch other tickets' full bodies and resolutions only when you need them. Call the skills that **Notes** names; when unsure, call "grilling".
 4. **Record it.** Post the answer as the **Decision resolved** comment per **Comment shape**, set the ticket to the done status, and patch one gist line into **Decisions so far**.
 5. **Follow through.**
    - Add any new decision tickets the answer surfaced (create, then wire).
@@ -206,6 +208,8 @@ The user names an idea or a map (by URL or name), and maybe a ticket. Pick the m
    - If the answer settles build work, offer to slice it now. If the user declines, leave it in **Not yet specified**, marked ready to slice.
    - If the answer shows a ticket (this one or another) is past the destination, rule it [out of scope](#out-of-scope) instead of resolving it.
    - If the answer makes other tickets wrong, edit them, or cancel them with a one-line comment. Never delete issues.
+   - If the answer makes the map's **Notes** wrong, patch them. If it changes the **Destination**, propose the edit and wait for a yes, since the Destination fixes scope.
+   - If the answer is "don't do this", rule that work out of scope. If it was the whole destination, propose redrawing the Destination or setting the map to its abandoned status.
 
 ### Slice a map
 
