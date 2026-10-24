@@ -23,7 +23,7 @@ Implement this ticket in one PR and run the verification below.
 
 ## Agent brief
 
-<The repo tag per **Repo routing**, only when the Product label alone would pick the wrong repo>
+<The repo tag per **Repo routing**, on every issue>
 
 ### Context
 
@@ -58,7 +58,7 @@ Implement this ticket in one PR and run the verification below.
 ## Filling it in
 
 - **What this is / Status / Next** form the front door: a reader should understand the issue without knowing the project. When the scope changes, update Status, Next and Suggested dispatch together. History goes in comments, not in new dated sections of the description.
-- **Suggested dispatch:** pick one model from **Preferred models**, weighing how hard and risky the work is against cost. Keep the strongest models for cross-cutting or ambiguous work (schema changes, auth, concurrency, architecture calls, hard debugging) and cheaper ones for mechanical or pattern-following changes. Then pick a target from **Dispatch targets** that can run that model: the default target unless the model or the work needs another (a model only one tool runs, a local stack, live input from the user). The reason clause says why the model fits. Pick outside the list only when nothing on it fits, and say why. It's a suggestion: whoever dispatches may override it, and the Dispatch target label records where the work was actually dispatched from.
+- **Suggested dispatch:** pick one model from **Preferred models**, weighing how hard and risky the work is against cost. Keep the strongest models for cross-cutting or ambiguous work (schema changes, auth, concurrency, architecture calls, hard debugging) and cheaper ones for mechanical or pattern-following changes. Then pick a target from **Dispatch targets** that can run that model: the default target unless the model or the work needs another (a model only one tool runs, a local stack, live input from the user). The reason clause says why the model fits. Before picking, check the **Checked** date under **Preferred models** against its re-check rule. If it is due, or a listed model has retired, re-read its **Sources** and propose an update to the user (new rows, retired rows, a new Checked date) before suggesting a model. Never suggest a model that isn't in the table. It's a suggestion: whoever dispatches may override it, and the Dispatch target label records where the work was actually dispatched from.
 - **Touches:** the directories and files from your code survey. Dispatch compares these lines to batch issues that don't overlap.
 - **README:** most issues have none. See the README rule in `SKILL.md`.
 - **Verification:** use the repo's own check command, from its `AGENTS.md` or README.
