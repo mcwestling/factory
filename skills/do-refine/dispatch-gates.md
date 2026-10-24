@@ -1,6 +1,6 @@
 # Dispatch gates
 
-An implementation issue may be dispatched only when it passes every gate below. Check them when slicing, when triage routes an issue straight to ready, and again before dispatch. An issue can sit in the ready status while blocked, but it can't be dispatched until its blockers close.
+An implementation issue may be dispatched only when it passes every gate below. Check them when slicing, when triage routes an issue straight to ready, and again before dispatch.
 
 | Gate                    | Passes when                                                                                                         |
 | ----------------------- | ------------------------------------------------------------------------------------------------------------------- |

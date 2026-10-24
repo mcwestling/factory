@@ -10,8 +10,6 @@ Some goals are too big, and too foggy, for one agent session: you can name where
 
 Every map points at a **destination**: a feature to ship, a decision to lock in, a migration to finish. Naming it comes first, because it decides what is in scope. Maps fit any kind of work, not only code.
 
-This skill needs its sibling skills installed (`do-triage`, `do-implement` and the rest); they link to files in this folder.
-
 ## Rules for every session
 
 - **Plan only.** A session settles decisions and writes implementation issues; it never builds the deliverable. When you feel the urge to start building, that is the cue to slice. A map's **Notes** may override this for its own effort. The one exception: when the user asks for it, a resolve session may make a small non-code artifact the decision itself names (a doc, a tracker setting) and link it from the ticket. Code, or anything bigger, is still an implementation issue.
@@ -30,13 +28,13 @@ Read and write the tracker only through the access the tracker doc's **Tracker**
 
 ## Maps
 
-A map is a **project** in the tracker. Each map gets its own project, with no marker label. Its tickets are **flat issues** in that project: no sub-issues, no parent links. The project is the only grouping. A map for a product sits in that product's initiative, per **Initiatives**.
+A map is a **project** in the tracker. Its tickets are **flat issues** in it: no sub-issues, no parent links. A map for a product sits in that product's initiative, per **Initiatives**.
 
 The map is an index. Each decision lives in one place, the ticket that settled it; the map gives a one-line gist and a link, and never repeats the detail.
 
 ### Summary and description
 
-The project **summary** is one plain sentence saying what the map is (the tracker caps it at 255 characters). The project **description** holds the whole map in five sections, small enough to load at the start of every session. Edit it with a patch, never a full rewrite, so concurrent sessions don't overwrite each other.
+The project **summary** is one plain sentence saying what the map is (the tracker caps it at 255 characters). The project **description** holds the whole map in five sections, small enough to load at the start of every session.
 
 ```markdown
 ## Destination
@@ -99,7 +97,7 @@ An implementation issue is one PR of build work. It carries no `wayfinder:` labe
 
 ### Blocking and the frontier
 
-Order tickets with the tracker's native issue relations (`blocks` / `blockedBy`). The tracker's own UI then shows what can be taken without opening the map. A ticket is **unblocked** when every ticket blocking it is closed.
+Order tickets with the tracker's native issue relations (`blocks` / `blockedBy`). A ticket is **unblocked** when every ticket blocking it is closed.
 
 - Implementation issues can be blocked by decision tickets and by other implementation issues.
 - A decision ticket is never blocked by an implementation issue. If a decision needs something done first, make that a `wayfinder:task` ticket.
@@ -113,8 +111,6 @@ The **frontier** is the set of decision tickets that are open, unblocked and unc
 
 To **claim** a ticket, assign it to the person driving the map, move it to the in-progress status and set its dispatch target label per **Dispatch targets**, before any other work, so parallel sessions skip it and the claim shows up as work in progress. The assignee is the claim: an open ticket with no assignee is free.
 
-People see the same sets in the shared views under **Views**: one for ready implementation issues, one for decisions to resolve, one for maps still to chart. Look a view up by its exact name, never by URL.
-
 ## Ticket types
 
 Each decision ticket is **HITL** (worked live with a person who answers for themselves) or **AFK** (the agent alone). A HITL ticket resolves only through that exchange: never answer the human's side yourself.
@@ -126,7 +122,7 @@ Each decision ticket is **HITL** (worked live with a person who answers for them
 | `wayfinder:grilling`  | HITL        | Conversation, in rounds (see [Grilling](#grilling)). Call the Skill tool for "grilling", and also for "domain-modeling" when the decision introduces or changes domain terms. The default type.                                                                                                                                                              |
 | `wayfinder:task`      | HITL or AFK | Doing the manual work a decision is waiting on: sign up for a service, get access, move data so its shape is visible. Do it yourself where you can; otherwise give the user an exact checklist. Record what was done and any facts later tickets need (where credentials live, new URLs, counts). |
 
-A task ticket is the one type that does rather than decides. It exists only to unblock a decision. Work that delivers the destination is an implementation issue, not a task.
+Work that delivers the destination is an implementation issue, not a task.
 
 ## Grilling
 
@@ -134,19 +130,16 @@ Ask in **rounds**. Each round asks everything that no longer depends on an open 
 
 1. Read the ticket or map and what it links: code paths, decision records, earlier comments. Anything you can find out yourself, find out; the user only makes the calls.
 2. Ask the round. Use the `AskUserQuestion` tool where the client has it, otherwise ask in chat. Ask in a tracker comment only when nobody is in the session.
-3. Wait for the answers before going further.
-4. Record the answers where they belong: the ticket's resolution comment, or the issue description.
-5. Work out what can be asked now, and run the next round. Finish when no open forks remain.
+3. Record the answers where they belong: the ticket's resolution comment, or the issue description.
+4. Work out what can be asked now, and run the next round. Finish when no open forks remain.
 
 Recommend the lightest option that meets the need the user stated, and offer heavier ones only as alternatives. "Don't do this" is always a possible answer: offer it when the cost looks out of proportion to the need.
-
-Grilling settles scope; it never starts the build.
 
 ## Fog
 
 A map is incomplete on purpose. Past the live tickets is **fog**: decisions, investigations and build work you can tell are coming but can't pin down yet, because they hang on open questions. Each resolution clears some fog, and whatever becomes clear turns into new tickets, until the way to the destination is mapped and all of its build work is sliced.
 
-Write the fog into **Not yet specified**, as loosely or as fully as you can see it. Everything there is in scope; it just isn't sharp enough to ticket. It also tells collaborators where the effort is heading.
+Write the fog into **Not yet specified**, as loosely or as fully as you can see it. Everything there is in scope; it just isn't sharp enough to ticket.
 
 Choose where a piece of work goes by whether you can **state** it precisely now, not whether you can answer it now:
 
@@ -169,9 +162,8 @@ Slicing turns settled build work into implementation issues, one PR each. Slice 
 1. **Gather.** Read the map's Destination, Notes and Decisions so far, then the resolution comments of the decisions this work depends on. Survey the code it touches, briefly: the directories and files, and any prefactoring that would make the change easy. Use the repo's own vocabulary and respect its decision records.
 2. **Draft.** Cut thin **vertical slices**: each a narrow path through every layer it needs (data, API, UI, tests), checkable on its own and sized to one PR. Prefactoring goes first, as its own slice. A wide mechanical change that no single slice can land green, such as a codebase-wide rename, goes **expand–contract**: add the new form beside the old, move callers over in batches, then delete the old form, each step a slice. Note each slice's blockers: other slices and any open decision tickets.
 3. **Check with the user.** Show the slices as a numbered list: title, blocked by, what it delivers, what it touches. Ask whether the size is right, whether each blocker is real, and whether any slice should merge or split. Repeat until the user approves. Never publish a slice the user hasn't seen.
-4. **Publish**, blockers first. Create each issue in the map's project, in the ready status, with no parent and with the labels the tracker doc requires. Write the body from [brief-template.md](brief-template.md), applying the implementation template under **Templates** when there is one. Resolve its repo per **Repo routing** and write the repo tag into every issue. If routing leaves the product unresolved, ask the user once which repo it uses, write that onto the product's initiative in the form **Repo routing** gives, and publish none of that product's issues until it is set. Then wire `blocks` / `blockedBy` in a second pass, once every issue has a real id. Check each issue against [dispatch-gates.md](dispatch-gates.md). If it fails any gate other than open blockers, it isn't a slice yet: put it back in the fog, or turn the gap into a decision ticket.
-5. **README line.** If an issue completes a major feature of the product, add a one-line update to the product README's non-developer intro to that issue's brief (the template's **README** line). Most issues get none.
-6. **Record.** Remove each sliced patch from **Not yet specified**, so it lives only as its issues. Slices aren't decisions, so they stay out of **Decisions so far**. If the map's charted status says nothing is sliced yet, move it to the one that says work is sliced.
+4. **Publish**, blockers first. Create each issue in the map's project, in the ready status, with no parent and with the labels the tracker doc requires. Write the body from [brief-template.md](brief-template.md), including its **README** line when the issue completes a major feature, applying the implementation template under **Templates** when there is one. Resolve its repo per **Repo routing** and write the repo tag into every issue. If routing leaves the product unresolved, ask the user once which repo it uses, write that onto the product's initiative in the form **Repo routing** gives, and publish none of that product's issues until it is set. Then wire `blocks` / `blockedBy` in a second pass, once every issue has a real id. Check each issue against [dispatch-gates.md](dispatch-gates.md). If it fails any gate other than open blockers, it isn't a slice yet: put it back in the fog, or turn the gap into a decision ticket.
+5. **Record.** Remove each sliced patch from **Not yet specified**, so it lives only as its issues. Slices aren't decisions, so they stay out of **Decisions so far**. If the map's charted status says nothing is sliced yet, move it to the one that says work is sliced.
 
 ## Choosing a mode
 
