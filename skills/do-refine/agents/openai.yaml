@@ -1,0 +1,5 @@
+interface:
+  display_name: "Do Refine"
+  short_description: "Chart a map, settle its decisions, and slice one-PR issues"
+policy:
+  allow_implicit_invocation: false
