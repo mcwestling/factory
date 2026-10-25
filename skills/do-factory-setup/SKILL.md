@@ -25,10 +25,10 @@ If the doc has no gaps, AGENTS.md links it and the README has its intro, the rep
 
 Read in parallel, then summarize what you found in one short message before interviewing:
 
-- **Workspace and team:** `get_workspace` for its name; `list_teams`. If there are several teams, ask which one this repo's issues live in. Record its name and key.
+- **Workspace and team:** `get_workspace` for its name; `list_teams`. Ignore retired teams. If several remain, ask which one this repo's issues live in. Record its name and key.
 - **Issue statuses:** `list_issue_statuses` for that team, in workflow order.
-- **Labels:** `list_issue_labels` with groups included, for the team and the workspace. Find the Product group (one label per product), the Dispatch target group (one label per tool doing the work), a Bug label, the `wayfinder:` decision labels, and retired labels (those with `retiredAt`).
-- **Project statuses:** read them from the team's projects (`list_projects`) and confirm the full set with the user; projects only show statuses in use.
+- **Labels:** `list_issue_labels` with groups included, for the team and the workspace. Find the Product group (one label per product), the Dispatch target group (one label per tool doing the work), a Bug label, the `wayfinder:` decision labels, and retired labels (those with `retiredAt`). Report any other active label that fits none of these; don't add it to the doc.
+- **Project statuses:** read them from the team's projects (`list_projects`) and confirm the full set with the user; projects only show statuses in use, so ask which unused statuses exist (for example, an early planning status or an abandoned one).
 - **Initiatives:** `list_initiatives`, with each description's first line.
 - **Views:** `list_custom_views`. Record views by exact name, never by URL: URLs carry workspace ids.
 - **Templates:** `list_templates`, for the implementation-issue template.
@@ -41,7 +41,7 @@ Ask only about gaps, using AskUserQuestion when it is available (at most 4 quest
 
 - **Repo routing:** for each product initiative, show its first description line. It must be exactly `Repo: owner/name`, or `Repo: none` for a product with no repo yet. List the ones that are missing or malformed and ask what each should say. Offer to write those lines to the initiatives; only do it if the user says yes.
 - **Dispatch targets:** which tools do the work (for example Claude Code, Codex, Cursor, Conductor, Orca), the label for each, when each applies, how a session tells which one it is, and the default.
-- **Preferred models:** which model to use for which kind of work, the vendor pages to check them against, and how often to re-check. Record today's date as **Checked**.
+- **Preferred models:** which model to use for which kind of work, the vendor pages to check them against, and how often to re-check. Fetch those pages to confirm the models, follow redirects and record the final URLs as Sources, then record today's date as **Checked**.
 - **Comment shape:** offer the default; ask only whether to change it.
 - **Meanings, in one pass:** propose a one-line meaning for each issue status, project status, label group and view, plus the team's scope, other clients that may access Linear, and how products map to initiatives (for example, whether some work has no product initiative). Let the user correct them together.
 - **Pull requests, triage and priority:** offer the defaults; ask only whether to change them.
@@ -50,7 +50,7 @@ If an answer is unknown, write a one-line `TODO:` under its heading and move on;
 
 ## 4. Write the tracker doc
 
-Write the doc with exactly the headings below, in this order. Headings are keys the other skills look up by name: never rename them. Every `<…>` slot below is filled with a value or replaced by a `TODO:` line; none is copied into the doc as-is. Fill only the gaps, keep every existing line as it was, and show the user the diff before saving.
+Write the doc with exactly the headings below, in this order. Headings are keys the other skills look up by name: never rename them. Every `<…>` slot below is filled with a value or replaced by a `TODO:` line; none is copied into the doc as-is. Fill only the gaps, keep every existing line as it was, and show the user the diff (or the full draft, for a new doc) before saving.
 
 Keep it public-safe: no secrets, internal URLs, workspace ids, machine names or personal data. Write example ids with the team's key, like `<KEY>-<number>`.
 
@@ -90,7 +90,7 @@ The skills hold the procedure. This file holds only the values they look up, und
 - **Dispatch target** (group, single-select): <meaning>
 - **Bug:** <meaning>
 - **Decision types:** <the `wayfinder:` labels>
-- **Retired, never apply:** <labels>
+- **Retired, never apply:** <the workflow labels agents might reach for>. Any other label with `retiredAt` is retired too.
 
 ## Templates
 
