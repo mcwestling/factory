@@ -1,229 +1,256 @@
 ---
 name: do-factory-setup
-description: Set up a repo for the factory skills. Writes the repo's values-only tracker doc (`docs/issue-tracker.md`) from Linear and opinionated defaults, asking only what neither settles. It points AGENTS.md at it, and writes the README's non-developer intro if it has none. Re-running fills gaps only.
+description: Set up a repo for the factory skills. Writes the repo's values-only tracker doc (`docs/issue-tracker.md`) from Linear and a fixed template, asking only what neither settles. It points AGENTS.md at it, and writes the README's non-developer intro if it has none. Re-running fills gaps only.
 disable-model-invocation: true
 ---
 
 The other factory skills (`do-post-its`, `do-triage`, `do-refine`, `do-implement`) hold all of the procedure and none of the workspace values. Each repo keeps those values in one short **tracker doc**. Your job is to write that doc for the repo you are in, so the other skills can run here.
 
-The doc holds **values only**: names, labels, statuses, views and the rules that pick between them. It holds no step-by-step procedure, and it never links to another repo.
+Setup is opinionated and deterministic: the same Linear workspace always gives the same doc. The doc is the [template](#template) below, copied verbatim, with only its `{{…}}` slots filled from Linear. Never reword, reorder or add to the template's text.
+
+The run ends in one of two ways: one round of easy questions, or "Looks good, we're set up!" Never end with a list of notes for the user to parse.
 
 ## Linear
 
-Use the Linear MCP server for every read (in an Orca workspace, `orca linear` also qualifies). If it is unavailable or unauthorized, stop and report that; don't fall back to a browser, the app, or the API. Never write to Linear unless the user says yes to that specific change.
+Use the Linear MCP server for every read (in an Orca workspace, `orca linear` also qualifies). If it is unavailable or unauthorized, stop and report that; don't fall back to a browser, the app, or the API. Write to Linear only when the user picks that option in a question.
 
 ## 1. Find what exists
 
 1. **Tracker doc path:** if `AGENTS.md` names a tracker doc, use that path. Otherwise use `docs/issue-tracker.md`.
-2. **Existing doc:** if it exists, read it. Every value already in it is settled: you never overwrite it, only fill gaps. A **gap** is a heading from the shape below that is missing or empty, or a line starting `TODO:`. Angle-bracket text in a written doc (like `<KEY>-<number>` or `<reason>`) is a value, not a gap.
+2. **Existing doc:** if it exists, read it. Every value already in it is settled: you never overwrite it, only fill gaps. A **gap** is a template heading that is missing or empty, or a line starting `TODO:`.
 3. **AGENTS.md:** note whether it links the tracker doc.
-4. **README:** read `README.md`, if any, and note whether it opens with a non-developer intro (see step 6).
-
-If the doc has no gaps, AGENTS.md links it and the README has its intro, the repo is set up: do step 2 only to check for drift, report, and write nothing.
+4. **README:** read `README.md`, if any, and note whether it opens with a non-developer intro (see step 5).
 
 ## 2. Read Linear
 
 Read in parallel:
 
-- **Workspace and team:** `get_workspace` for its name; `list_teams`. Ignore retired teams. If several remain, ask which one this repo's issues live in. Record its name and key.
-- **Issue statuses:** `list_issue_statuses` for that team, in workflow order.
-- **Labels:** `list_issue_labels` with groups included, for the team and the workspace. Find the Product group (one label per product), the Dispatch target group (one label per tool doing the work), a Bug label, the `wayfinder:` decision labels, and retired labels (those with `retiredAt`). Report any other active label that fits none of these; don't add it to the doc.
-- **Project statuses:** read them from the team's projects (`list_projects`). Projects only show statuses in use, so the default set fills in the rest.
+- **Workspace and team:** `get_workspace` for its name; `list_teams`, ignoring retired teams.
+- **Issue statuses:** `list_issue_statuses` for the team, in workflow order.
+- **Labels:** `list_issue_labels` with groups included, for the team and the workspace.
 - **Initiatives:** `list_initiatives`, with each description's first line.
-- **Views:** `list_custom_views`. Record views by exact name, never by URL: URLs carry workspace ids.
-- **Templates:** `list_templates`, for the implementation-issue template.
+- **Views:** `list_custom_views`.
+- **Templates:** `list_templates` for the team, type `issue`.
+- **Models:** fetch each page under the template's Sources, following redirects, and check every model in the template's table is still listed.
 
-If the doc already exists, compare it with what you read. Where Linear disagrees with a value in the doc (a renamed status, a deleted view), report the drift and leave the doc alone.
+## 3. Ask, once
 
-## 3. Settle the values
+Collect everything below that applies, and ask it all in one AskUserQuestion round (at most 4 questions per call; more calls only if needed). Write each question for someone new to the factory: say what you found in plain words, give concrete options, and put the recommended one first. Skip anything the existing doc already settles.
 
-Setup is opinionated: the same Linear workspace always gives the same doc. Settle every gap from what you read in Linear plus the [defaults](#defaults), without asking. Ask only where neither can settle it:
+- **Team:** more than one active team. Which one does this repo's work live in?
+- **Repo line:** a product initiative whose first description line isn't exactly `Repo: owner/name` or `Repo: none`. Offer the likely repo (this one, if the name fits), `Repo: none`, and leaving it for later. Offer to write the answer to the initiative.
+- **Product label:** an initiative with no Product label of the same name, or the reverse. Offer to create the missing label or skip.
+- **Unknown names:** an issue status, or a label in the Dispatch target group, that the template doesn't have a row for. Ask what it's for, with your best guess as the first option.
+- **Default target:** the Dispatch target group has no `Orca` label. Which tool should do work by default?
+- **Template:** pick the implementation-issue template when the team has exactly one issue template, or exactly one whose name or description says "implementation". Otherwise ask which template agents should use for implementation issues, listing them.
+- **Missing views:** a `Factory:` view from the template that Linear doesn't have. Say the user needs to create it in Linear (the MCP can't), with the filters from the template; offer "I'll do it" or "Skip for now".
+- **Stale models:** a model the vendor page no longer lists. Offer to drop its row or keep it.
+- **Drift:** on a re-run, a value in the doc that Linear contradicts (a renamed status, a deleted view). Offer to update the doc line or keep it.
 
-- **Team:** several active teams, so ask which one this repo uses.
-- **Repo routing:** a product initiative whose first description line isn't exactly `Repo: owner/name` or `Repo: none`. Ask what each one should say, and offer to write those lines to the initiatives; only do it if the user says yes.
-- **Unknown names:** an issue status or project status the defaults don't cover. Ask for a one-line meaning.
+Labels Linear has that the template doesn't use (like a `Release` label) are fine: say nothing about them.
 
-Ask these together in one AskUserQuestion call when it is available. If the user doesn't know an answer, write a one-line `TODO:` under its heading; a later run fills it.
+If the user skips a question that fills a slot, write `TODO:` and the question in place of the slot's line.
 
-## 4. Write the tracker doc
+## 4. Write
 
-Write the doc with exactly the headings below, in this order. Headings are keys the other skills look up by name: never rename them. Every `<…>` slot below is filled with a value or replaced by a `TODO:` line; none is copied into the doc as-is. Fill only the gaps and keep every existing line as it was. Show the user the full draft for a new doc, or the diff for an existing one, and save once they approve. Corrections at that point are their only edits; don't turn the review into questions.
+1. **Tracker doc:** fill only its gaps from the template, keeping every existing line as it was. For a new doc, write the whole template. Keep tables column-aligned.
+2. **AGENTS.md:** if it doesn't link the doc, add this under an `## Issue tracker` heading, using the path from step 1, and touch nothing else. Create `AGENTS.md` with just that if the repo has none.
 
-Keep it public-safe: no secrets, internal URLs, workspace ids, machine names or personal data. Write example ids with the team's key, like `<KEY>-<number>`.
+   ```markdown
+   The workspace values the skills read are in [`docs/issue-tracker.md`](docs/issue-tracker.md).
+   ```
 
-```markdown
-# Issue tracker
+3. **Linear:** make the changes the user picked in step 3, and nothing else.
 
-<One line: whose config this is.>
+Don't commit unless asked.
 
-The skills hold the procedure. This file holds only the values they look up, under the headings below. Keep the headings stable: skills cite them by name.
-
-## Tracker
-
-- **Tool:** Linear, workspace **<name>**.
-- **Access:** Linear MCP only. <Any other client that qualifies.>
-
-## Team
-
-- **Name:** <team name>
-- **Key:** `<KEY>` (issue ids look like `<KEY>-<number>`)
-- **Scope:** <what the team holds>
-
-## Issue statuses
-
-<Table: Status | Meaning, in workflow order. Say which status agents never set.>
-
-## Project statuses
-
-<Table: Status | Meaning.>
-
-## Priority
-
-<How priority is used, or "Not used.">
-
-## Labels
-
-- **Product** (group, single-select): <meaning>
-- **Dispatch target** (group, single-select): <meaning>
-- **Bug:** <meaning>
-- **Decision types:** <the `wayfinder:` labels>
-- **Retired, never apply:** <the workflow labels agents might reach for>. Any other label with `retiredAt` is retired too.
-
-## Templates
-
-- **Implementation issues:** `<template name>`
-
-## Initiatives
-
-<How products map to initiatives.>
-
-## Repo routing
-
-<Source, On the issue, Lookup, Cross-check, Unresolved: see the default.>
-
-## Dispatch targets
-
-<Table: Label | Use it when. Then how the label is set, and the default target.>
-
-## Preferred models
-
-**Checked:** <YYYY-MM-DD>. <When to re-check.>
-
-<Table: Model | Use it for.>
-
-**Sources:**
-
-- <vendor model page>
-
-## Views
-
-<Table: View | Kind | Filters, by exact name.>
-
-## Triage
-
-- **Queue:** <which issues>
-- **Look-back:** <how far back to survey Done and Canceled issues>
-
-## Comment shape
-
-<Table and datelines; see the default.>
-
-## Pull requests
-
-- **Title:** <format, ending with the issue id in parentheses>
-- **Branch:** <naming rule>
-- **Review:** <who marks PRs ready and merges>
-```
-
-### Defaults
-
-Use these wherever Linear doesn't settle a value. Replace `<KEY>` with the team's key and `<workspace>` with the workspace name.
-
-- **Tracker:** the opening line is "This is `<workspace>`'s config; to adopt, copy it and replace the values." Access is Linear MCP only; in an Orca workspace, the `orca linear` CLI also qualifies.
-- **Team scope:** the one team holds every product and company issue. With several active teams, it holds this repo's products.
-- **Issue statuses:** keep the team's workflow order. Use these meanings for the names that match:
-  - `Triage`: captured, not yet reviewed. Default for new issues.
-  - `Backlog`: in a map but not ready yet.
-  - `Todo`: ready. Blockers still decide whether work can start.
-  - `In Progress`: claimed, including draft PRs.
-  - `In Review`: PR out of draft and ready to merge. A draft PR stays `In Progress`. Set only by Linear's GitHub automation, never by agents.
-  - `Done`: decision resolved, or PR merged.
-  - `Canceled`: declined or won't do.
-  - `Duplicate`: duplicate of another issue.
-- **Project statuses:** the factory uses all six, whether or not a project is in one yet:
-  - `Uncharted`: stub map from triage, not yet charted.
-  - `Idea`: charted with a Destination; decisions still open, nothing sliced.
-  - `Planned`: enough decisions made that implementation issues are sliced or ready to slice.
-  - `Ongoing`: work has started.
-  - `Done`: Destination reached.
-  - `Won't Do`: abandoned.
-- **Labels:** Product is the product an issue belongs to and matches its initiative. Dispatch target is the tool doing the work. Bug is a concrete defect; a Triage item without it is a muse. For retired labels, list the workflow labels agents might reach for, then add "Any other label with `retiredAt` is retired too."
-- **Templates:** the team template whose name says it is for implementation issues; otherwise a `TODO:`.
-- **Initiatives:** each product has an initiative with the same name as its Product label, and its description opens with a `Repo:` line. If some initiatives have no Product label, or the reverse, say so in the doc and in the report.
-- **Dispatch targets:** one row per active label in the Dispatch target group, "Work dispatched from <label>", plus any note the label's description gives. Then: "The label records where the work was dispatched from, not where the session runs or which model ran. Set it when work starts." The default target is the label for the tool running this setup, if there is one; otherwise the first label.
-- **Preferred models:** for each vendor behind a Dispatch target, fetch its model page, follow redirects and record the final URL under Sources. Write one row for its strongest model and one for its fastest capable coding model, each with a one-line "use it for". Record today's date as **Checked**.
-
-- **Repo routing:**
-  - **Source:** each product initiative's description opens with exactly `Repo: owner/name`, or `Repo: none` for a product with no repo yet. Several products may share a repo. This is the only product-to-repo mapping.
-  - **On the issue:** a `` `[repo=owner/name]` `` tag in the issue description, written as a code span. Linear escapes bare brackets to `\[repo=…\]`, which also counts. It is the same syntax Cursor's Linear integration reads, and it overrides everything else.
-  - **Lookup:** Product label → the initiative with the same name → its `Repo:` line. One hop; never inferred from anything else.
-  - **Cross-check:** PRs already linked to other issues of the same product. A mismatch stops the work.
-  - **Unresolved:** no tag and `Repo: none` (or no `Repo:` line). There is no default repo.
-- **Views:** introduce the table with "The factory expects exactly these shared views on the `<KEY>` team. Keep them, and find them by exact name with `list_custom_views`." The factory skills look for five:
-  - `Factory: Maps` (projects): project status not finished; grouped by initiative, sub-grouped and ordered by project status.
-  - `Factory: Decisions` (issues): `Todo`, no assignee, not blocked, a `wayfinder:` label, in a project.
-  - `Factory: Ready` (issues): `Todo`, no assignee, not blocked, no `wayfinder:` label; grouped by Product, then project.
-  - `Factory: Agent Work` (issues): `In Progress` or `In Review`, and either delegated to an agent or carrying a Dispatch target label; grouped by Product, then project.
-  - `Factory: All Work` (issues): `In Progress` or `In Review`.
-
-  If any are missing in Linear, list them for the user to create; the MCP can't create views.
-- **Preferred models:** re-check when the Checked date is over 90 days old or a listed model retires.
-- **Triage:** every `<KEY>` issue in `Triage`; look back 90 days.
-- **Pull requests:** title like `Fix the login redirect bug (<KEY>-<number>)`; branch exactly the issue's Linear branch name (`gitBranchName` from `get_issue`), never invented or prefixed; no PR autopilot, so PRs open as drafts and a person marks them ready and merges.
-- **Priority:** not used; leave every issue at No priority.
-- **Comment shape:**
-
-  | Element            | Markdown                 | Notes                   |
-  | ------------------ | ------------------------ | ----------------------- |
-  | Dateline           | `YYYY-MM-DD —` summary   | First line of a comment |
-  | Section label      | `**Label:**` text        | Bold label inline       |
-  | Paths, keys, enums | `` `like-this` ``        | Monospace               |
-  | Bullets            | `- item` on its own line | Standard list           |
-  | Steps              | `1. item`                | Numbered line           |
-
-  Datelines in use:
-
-  - **Triage route:** `YYYY-MM-DD — Triage: <Route>. <reason>. <links>`
-  - **PR opened:** `YYYY-MM-DD — PR opened: <link>`
-  - **Back to Triage:** `YYYY-MM-DD — Back to Triage: <reason>.`
-  - **Decision resolved:** a `## Resolution (YYYY-MM-DD)` heading
-  - **Kickoff prompt:** a fenced `text` block reading `To kick this off, run /do-implement <KEY>-<number>`
-
-## 5. Point AGENTS.md at it
-
-The other skills find the tracker doc through `AGENTS.md`. If `AGENTS.md` doesn't already link the doc, add one line under an `## Issue tracker` heading, using the path from step 1:
-
-```markdown
-The workspace values the skills read are in [`docs/issue-tracker.md`](docs/issue-tracker.md).
-```
-
-Create `AGENTS.md` with just that heading and line if the repo has none. Never touch anything else in it.
-
-## 6. Write the README intro
+## 5. README intro
 
 Skip this step if `README.md` already opens with an intro for non-developers: a plain description of what the product does and who it's for, before any setup or code.
 
-Otherwise, draft one and put it at the top of the README, above any developer sections, which you leave as they are. It has a loose, fixed shape, plain headings and no machine markers:
+Otherwise, write one at the top of the README, above any developer sections, which you leave as they are. It has a loose, fixed shape, plain headings and no machine markers:
 
 1. **Name and one-line pitch:** the `#` title, then one sentence on what it is.
 2. **What it does:** a short paragraph or a few bullets, in plain words.
 3. **Who it's for:** one short paragraph.
 4. **Links:** to deeper docs in the repo (setup, contributing, license).
 
-Draft it from the repo itself (code, existing docs, the product's initiative description) and ask the user for anything you can't tell. Show the draft and get the user's approval before writing.
+Draft it from the repo itself (code, existing docs, the product's initiative description). If you can't tell what the product does or who it's for, ask in step 3.
 
 **Public safety:** say what it does and who it's for. Never include secrets, internal URLs, workspace or machine ids, personal data, or client details, unless the client is already public about it.
 
-## 7. Report
+## 6. Finish
 
-Tell the user what you wrote (tracker doc gaps filled, AGENTS.md line, README intro), what you left as `TODO:`, any drift between Linear and the doc, and any views or `Repo:` lines still missing in Linear. Don't commit unless asked.
+If nothing was written, say "Looks good, we're set up!" and stop.
+
+Otherwise, say "Looks good, we're set up!" and add one line naming the files you wrote, so the user can review them with `git diff`. Nothing else.
+
+## Template
+
+Slots are `{{…}}`. Fill them from Linear; everything else is copied exactly, including the `<…>` placeholders in the comment shape and pull request lines. Where a slot is a table row or list item, repeat it for each match, in the order given.
+
+- `{{workspace}}`, `{{team}}`, `{{KEY}}`: the workspace name, team name and team key.
+- **Issue status rows:** one row per team status, in workflow order, using the meaning from this table. A status not in it gets the meaning the user gave in step 3.
+
+  | Status        | Meaning                                                                                                                      |
+  | ------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+  | `Triage`      | Captured, not yet reviewed. Default for new issues.                                                                          |
+  | `Backlog`     | In a map but not ready yet.                                                                                                  |
+  | `Todo`        | Ready. Blockers still decide whether work can start.                                                                         |
+  | `In Progress` | Claimed, including draft PRs.                                                                                                |
+  | `In Review`   | PR out of draft and ready to merge. A draft PR stays `In Progress`. Set only by Linear's GitHub automation, never by agents. |
+  | `Done`        | Decision resolved, or PR merged.                                                                                             |
+  | `Canceled`    | Declined or won't do.                                                                                                        |
+  | `Duplicate`   | Duplicate of another issue.                                                                                                  |
+
+- `{{decision labels}}`: the team's `wayfinder:` labels that exist, in this order: `wayfinder:research`, `wayfinder:grilling`, `wayfinder:prototype`, `wayfinder:task`. Each in backticks, comma-separated.
+- `{{retired labels}}`: in this order, comma-separated: the retired labels among `ready-for-agent`, `ready-for-human`, `needs-triage`, `needs-info`, `wontfix`, `wayfinder:map` (in that order); then each retired label group as "the `<name>` group"; then retired Dispatch target labels, alphabetically, as "and the `A`, `B` and `C` dispatch targets".
+- `{{template}}`: the implementation-issue template, as `` `<name>` (team-scoped) `` or `` `<name>` (workspace) ``.
+- **Dispatch target rows:** one row per active label in the Dispatch target group, in this table's order, then any others with the meaning the user gave in step 3.
+
+  | Label           | Use it when                                                                      |
+  | --------------- | -------------------------------------------------------------------------------- |
+  | `Orca`          | Dispatched from Orca, including Cursor Cloud agents it launches                  |
+  | `Claude`        | Claude Code outside Orca                                                         |
+  | `Codex`         | Codex outside Orca                                                               |
+  | `Linear/Cursor` | Cursor Cloud, delegated from Linear. Legacy; retired when Factory Dispatch ships |
+
+- `{{orca rule}}`: if there is an `Orca` label, ": a session with any `ORCA_*` environment variable set is `Orca`, and Orca sets the label itself on the Cursor Cloud agents it launches"; otherwise nothing.
+- `{{default target}}`: `Orca` if that label exists; otherwise the user's answer in step 3.
+
+The model table and its Checked date are the factory's curated pick. Copy them as they are; step 3 handles models a vendor has dropped.
+
+```markdown
+# Issue tracker
+
+This is {{workspace}}'s config; to adopt, copy it and replace the values.
+
+The skills hold the procedure. This file holds only the values they look up, under the headings below. Keep the headings stable: skills cite them by name.
+
+## Tracker
+
+- **Tool:** Linear, workspace **{{workspace}}**.
+- **Access:** Linear MCP only. In an Orca workspace, the `orca linear` CLI also qualifies.
+
+## Team
+
+- **Name:** {{team}}
+- **Key:** `{{KEY}}` (issue ids look like `{{KEY}}-<number>`)
+- **Scope:** the one team holds every product and company issue.
+
+## Issue statuses
+
+| Status        | Meaning                                                                                                                      |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+{{issue status rows}}
+
+## Project statuses
+
+| Status      | Meaning                                                                       |
+| ----------- | ----------------------------------------------------------------------------- |
+| `Uncharted` | Stub map from triage, not yet charted                                         |
+| `Idea`      | Charted with a Destination; decisions still open, nothing sliced              |
+| `Planned`   | Enough decisions made that implementation issues are sliced or ready to slice |
+| `Ongoing`   | Work has started                                                              |
+| `Done`      | Destination reached                                                           |
+| `Won't Do`  | Abandoned                                                                     |
+
+## Priority
+
+Not used. Leave every issue at **No priority**.
+
+## Labels
+
+- **Product** (group, single-select): the product an issue belongs to; matches its initiative.
+- **Dispatch target** (group, single-select): the tool doing the work. See [Dispatch targets](#dispatch-targets).
+- **Bug:** a concrete defect. A Triage item without it is a muse.
+- **Decision types:** {{decision labels}}.
+- **Retired, never apply:** {{retired labels}}. Any other label with `retiredAt` is retired too.
+
+## Templates
+
+- **Implementation issues:** {{template}}.
+
+## Initiatives
+
+Each product has an initiative with the same name as its Product label. Its description opens with a `Repo:` line; see [Repo routing](#repo-routing). Company work has no product initiative.
+
+## Repo routing
+
+- **Source:** each product initiative's description opens with exactly `Repo: owner/name`, or `Repo: none` for a product with no repo yet. Several products may share a repo. This is the only product-to-repo mapping.
+- **On the issue:** a `` `[repo=owner/name]` `` tag in the issue description, written as a code span. Linear escapes bare brackets to `\[repo=…\]`, which also counts. It is the same syntax Cursor's Linear integration reads, and it overrides everything else.
+- **Lookup:** Product label → the initiative with the same name → its `Repo:` line. One hop; never inferred from anything else.
+- **Cross-check:** PRs already linked to other issues of the same product. A mismatch stops the work.
+- **Unresolved:** no tag and `Repo: none` (or no `Repo:` line). There is no default repo.
+
+## Dispatch targets
+
+| Label           | Use it when                                                                      |
+| --------------- | -------------------------------------------------------------------------------- |
+{{dispatch target rows}}
+
+The label records where the work was dispatched from, not where the session runs or which model ran. Set it when work starts{{orca rule}}. The issue's Suggested dispatch line is the plan; the label records what actually ran.
+
+**Default target:** `{{default target}}`, for every model below.
+
+## Preferred models
+
+**Checked:** 2026-10-25, against the vendor pages under Sources. Re-check when this date is over 90 days old or a listed model retires.
+
+| Model            | Use it for                                                                     |
+| ---------------- | ------------------------------------------------------------------------------ |
+| Claude Opus 5.5  | Judgment-heavy, cross-cutting or ambiguous work; the maintainer in the session |
+| Claude Fable 5.1 | Long-horizon or hardest work, when Opus 5.5 at higher effort falls short       |
+| GPT-6 Astra      | Hardest end-to-end work in Codex, when GPT-6.1 Sol falls short                 |
+| GPT-6.1 Sol      | Complex implementation and agentic work                                        |
+| GPT-6 Luna       | Focused, pattern-following tickets where a good result is clear                |
+| Composer 2.5     | Mechanical changes, as a Cursor Cloud agent                                    |
+| Grok 4.7         | Mechanical changes, as a Cursor Cloud agent                                    |
+
+**Sources:**
+
+- Claude: <https://platform.claude.com/docs/en/about-claude/models/overview>
+- Codex: <https://learn.chatgpt.com/docs/models>
+- Cursor: <https://cursor.com/docs/models>
+
+## Views
+
+The factory expects exactly these shared views on the `{{KEY}}` team. Keep them, and find them by exact name with `list_custom_views`.
+
+| View                  | Kind     | Filters                                                                                                                                       |
+| --------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Factory: Maps`       | Projects | Project status not `Done` or `Won't Do`; grouped by initiative (product), sub-grouped and ordered by project status                           |
+| `Factory: Decisions`  | Issues   | Status `Todo`, no assignee, not blocked, a `wayfinder:` label, in a project                                                                   |
+| `Factory: Ready`      | Issues   | Status `Todo`, no assignee, not blocked, no `wayfinder:` label; grouped by Product, then project                                              |
+| `Factory: Agent Work` | Issues   | Status `In Progress` or `In Review`, and either delegated to an agent or carrying a `Dispatch target` label; grouped by Product, then project |
+| `Factory: All Work`   | Issues   | Status `In Progress` or `In Review`                                                                                                           |
+
+## Triage
+
+- **Queue:** every `{{KEY}}` issue in `Triage`, across all products.
+- **Look-back:** survey Done and Canceled issues from the last 90 days.
+
+## Comment shape
+
+| Element            | Markdown                 | Notes                   |
+| ------------------ | ------------------------ | ----------------------- |
+| Dateline           | `YYYY-MM-DD —` summary   | First line of a comment |
+| Section label      | `**Label:**` text        | Bold label inline       |
+| Paths, keys, enums | `` `like-this` ``        | Monospace               |
+| Bullets            | `- item` on its own line | Standard list           |
+| Steps              | `1. item`                | Numbered line           |
+
+Datelines in use:
+
+- **Triage route:** `YYYY-MM-DD — Triage: <Route>. <reason>. <links>`
+- **PR opened:** `YYYY-MM-DD — PR opened: <link>`
+- **Back to Triage:** `YYYY-MM-DD — Back to Triage: <reason>.`
+- **Decision resolved:** a `## Resolution (YYYY-MM-DD)` heading
+- **Kickoff prompt:** a fenced `text` block reading `To kick this off, run /do-implement {{KEY}}-<number>`
+
+## Pull requests
+
+- **Title:** a plain imperative subject ending with the issue id in parentheses, like `Fix the login redirect bug ({{KEY}}-<number>)`.
+- **Branch:** exactly the issue's Linear branch name (`gitBranchName` from `get_issue`). Never invent or prefix one.
+- **Review:** no PR autopilot in this repo. PRs open as drafts; the maintainer marks them ready and merges.
+```
