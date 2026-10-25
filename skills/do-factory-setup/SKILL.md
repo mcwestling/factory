@@ -41,7 +41,7 @@ Setup is opinionated: the same Linear workspace always gives the same doc. Settl
 
 - **Team:** several active teams, so ask which one this repo uses.
 - **Repo routing:** a product initiative whose first description line isn't exactly `Repo: owner/name` or `Repo: none`. Ask what each one should say, and offer to write those lines to the initiatives; only do it if the user says yes.
-- **Unknown names:** an issue status, project status or Dispatch target label the defaults don't cover. Ask for a one-line meaning.
+- **Unknown names:** an issue status or project status the defaults don't cover. Ask for a one-line meaning.
 
 Ask these together in one AskUserQuestion call when it is available. If the user doesn't know an answer, write a one-line `TODO:` under its heading; a later run fills it.
 
