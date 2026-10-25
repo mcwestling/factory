@@ -56,6 +56,8 @@ Ask the user, recommended route first, marked "(Recommended)", with context in t
 | **Todo now**     | Clear, one PR, and one or two questions settle it                               | Ask those questions, then [write it as an implementation issue](#write-an-implementation-issue) in the ready status, with no project. If it needs more questions, it needs a map: route it to one. |
 | **New map**      | Wanted but not ready: open decisions, several issues, or more than one session | Make a [stub map](#stub-maps) and move the cluster into it. A single item that needs real refinement still gets a map.                                                                            |
 
+**Into a stub map.** When the map an item fits is still a stub (not yet charted), route it as **Existing map** but treat it like a new stub: move it in unchanged in the backlog status and add its line to **Not yet specified** if it isn't there yet. Charting will rewrite it.
+
 **Merging.** When several captures in a cluster are one piece of work, keep the clearest, fold the others' quotes into it, and mark the rest duplicates of it.
 
 **Captures that defer to triage.** Some captures leave their meaning open ("work this out in triage"). Ask the user what they meant before routing, and record the answer in the body as `<User>'s clarification: …`.
