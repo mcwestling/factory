@@ -18,6 +18,8 @@ If a value you need is missing, ask the user, use their answer, then offer to ad
 
 Read and write the tracker only through the access the tracker doc's **Tracker** heading allows. If that access is unavailable or unauthorized, stop and say so; don't fall back to a browser, desktop app or raw API.
 
+**Asking.** Ask with AskUserQuestion where the client has it (multiSelect when picking several items, up to 4 questions per call), otherwise in chat.
+
 **Names, not ids.** Refer to issues and maps by title in everything the user reads, with the id or link inside the name. Link projects only with URLs the tracker returns when you create or fetch them; guessed project URLs break.
 
 ## 1. Load the queue
@@ -26,15 +28,15 @@ Read and write the tracker only through the access the tracker doc's **Tracker**
 - **Maps:** open projects with their summaries, and descriptions where a cluster might fit.
 - **Backlog:** every issue in the backlog status (titles, labels, projects), for the survey.
 
-**Scope.** If the user names a subset ("the Post-its from today"), list the other Triage items by name with a one-line gist each and ask which to include (AskUserQuestion, multiSelect). Don't ask an abstract "whole queue or a subset?".
+**Scope.** If the user names a subset ("the Post-its from today"), list the other Triage items by name with a one-line gist each and ask which to include. Don't ask an abstract "whole queue or a subset?".
 
-**Loose muses.** A Backlog issue with no project and no triage comment skipped this process, bugs included. List them by name, warn the user, and ask (AskUserQuestion, multiSelect) which go back to Triage. Move only the ones picked, post the **Back to Triage** comment per **Comment shape** on each (reason: a loose muse found during triage review), and add them to the queue.
+**Loose muses.** A Backlog issue with no project and no triage comment skipped this process, bugs included. List them by name, warn the user, and ask which go back to Triage. Move only the ones picked, post the **Back to Triage** comment per **Comment shape** on each (reason: a loose muse found during triage review), and add them to the queue.
 
 ## 2. Survey
 
 For each item, look for related work and current state:
 
-- **Tracker:** related maps, Backlog issues, other Triage items, and Done or Canceled issues from the look-back per **Triage** (a muse may already have shipped or been declined). Search on the item's key terms and filter by its Product label. Keep the sweep bounded: the look-back window, or the top 10 hits per query.
+- **Tracker:** related maps, Backlog issues, other Triage items, and issues in the done and canceled statuses from the look-back per **Triage** (a muse may already have shipped or been declined). Search on the item's key terms and filter by its Product label. Keep the sweep bounded: the look-back window, or the top 10 hits per query.
 - **Projects:** search **all** projects by key terms, including finished and abandoned ones and other initiatives. The user may remember a map that never existed, or forget one that did; a distant map can still own the item.
 - **Code:** a quick, bounded check of whether the behavior already exists and where it lives (routes, components, schema fields). Say where you looked, and note the directories and files involved; ready briefs reuse them. This is for routing, not design.
 
@@ -44,7 +46,7 @@ Group items that belong together: the same page or feature, one idea split acros
 
 ## 4. Route each cluster
 
-Ask with AskUserQuestion: recommended route first, marked "(Recommended)", with context in the option descriptions. A multi-item cluster gets its own call; single-item clusters can share one, up to 4 per call.
+Ask the user, recommended route first, marked "(Recommended)", with context in the option descriptions. A multi-item cluster gets its own question; single-item clusters can share a call.
 
 | Route            | When                                                                            | What you do                                                                                                                                                                                       |
 | ---------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -70,7 +72,7 @@ Write the body from [brief-template.md](../do-refine/brief-template.md), applyin
 
 ### Rewrite a capture as a map ticket
 
-Keep the issue, so its history and the user's words come with it; change only its body and labels (see **Labels** above). Use the ticket shapes in [do-refine's SKILL.md](../do-refine/SKILL.md):
+Keep the issue, so its history and the user's words come with it; change only its body and labels (see the labels rule above). Use the ticket shapes in [do-refine's SKILL.md](../do-refine/SKILL.md):
 
 - **Decision ticket:** one plain sentence, then `## Question`, with a `wayfinder:<type>` label, in the ready status.
 - **Implementation issue:** the brief [above](#write-an-implementation-issue), no `wayfinder:` label, in the ready status.
@@ -81,7 +83,7 @@ Either way, read the map's current tickets and their order first, then wire `blo
 
 Triage makes the map; a separate `do-refine` session charts it. Charting is a whole session, so don't start it here.
 
-- Create the project with a one-sentence summary, an emoji icon that fits the subject, the product's initiative per **Initiatives**, the stub status per **Project statuses** (never a charted one), and the description shape from do-refine's **Maps** section, Product line included.
+- Create the project with a one-sentence summary, an emoji icon that fits the subject, the product's initiative per **Initiatives**, the stub status per **Project statuses** (never a charted one), and the description shape from do-refine's [Maps](../do-refine/SKILL.md#maps) section, Product line included.
 - **Destination:** a one- or two-line draft, marked `Draft — confirm when charting`.
 - **Notes:** `Stub from triage on YYYY-MM-DD; chart with do-refine.`, plus anything the user said while routing. Link related maps, and name any map you considered and ruled out, with the reason.
 - **Not yet specified:** one line per absorbed capture, linking it.
@@ -89,7 +91,7 @@ Triage makes the map; a separate `do-refine` session charts it. Charting is a wh
 
 ### Record the decision
 
-On every routed issue, post one **Triage route** comment per **Comment shape**: the route, one line of reasoning, and links to the map, duplicate or related issues. If the doc defines no shape, use `YYYY-MM-DD — Triage: <Route>. <reason>. <links>`.
+On every routed issue, post one **Triage route** comment per **Comment shape**: the route, one line of reasoning, and links to the map, duplicate or related issues.
 
 ## 5. Wrap up
 
