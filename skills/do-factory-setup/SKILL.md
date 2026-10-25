@@ -20,6 +20,7 @@ Use the Linear MCP server for every read (in an Orca workspace, `orca linear` al
 2. **Existing doc:** if it exists, read it. Every value already in it is settled: you never overwrite it, only fill gaps. A **gap** is a template heading that is missing or empty, or a line starting `TODO:`.
 3. **AGENTS.md:** note whether it links the tracker doc.
 4. **README:** read `README.md`, if any, and note whether it opens with a non-developer intro (see step 5).
+5. **Setup version:** the doc's `**Setup version:**` line records which version of this template wrote it; this skill's version is the one in its template. The same version means fill gaps only. A doc with no such line predates versioning: treat it as `2026-10-25` and add the line as a gap. A doc with a newer version than the skill means the skill is out of date: stop and tell the user to update the factory skills.
 
 ## 2. Read Linear
 
@@ -123,6 +124,8 @@ The model table and its Checked date are the factory's curated pick. Copy them a
 # Issue tracker
 
 This is {{workspace}}'s config; to adopt, copy it and replace the values.
+
+**Setup version:** 2026-10-25
 
 The skills hold the procedure. This file holds only the values they look up, under the headings below. Keep the headings stable: skills cite them by name.
 
