@@ -1,0 +1,5 @@
+interface:
+  display_name: "Do Triage"
+  short_description: "Work the Triage queue into maps and ready implementation issues"
+policy:
+  allow_implicit_invocation: false
