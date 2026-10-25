@@ -47,7 +47,7 @@ People who plan their work in Linear and want coding agents to do more of the bu
 | `do-triage`        | Works the Triage queue with you and routes each item                     |
 | `do-refine`        | Charts maps, resolves decision tickets, and slices implementation issues |
 | `do-implement`     | Takes one implementation issue to a verified draft PR                    |
-| `do-factory-setup` | Writes a repo's tracker doc from Linear plus a short interview           |
+| `do-factory-setup` | Writes a repo's tracker doc from Linear and opinionated defaults         |
 
 ## Install
 

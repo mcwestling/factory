@@ -1,5 +1,5 @@
 interface:
   display_name: "Do Factory Setup"
-  short_description: "Write a repo's tracker doc from Linear plus a short interview"
+  short_description: "Write a repo's tracker doc from Linear and opinionated defaults"
 policy:
   allow_implicit_invocation: false

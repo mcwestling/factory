@@ -1,6 +1,6 @@
 ---
 name: do-factory-setup
-description: Set up a repo for the factory skills. Writes the repo's values-only tracker doc (`docs/issue-tracker.md`) from Linear plus a short interview, points AGENTS.md at it, and writes the README's non-developer intro if it has none. Re-running fills gaps only.
+description: Set up a repo for the factory skills. Writes the repo's values-only tracker doc (`docs/issue-tracker.md`) from Linear and opinionated defaults, asking only what neither settles. It points AGENTS.md at it, and writes the README's non-developer intro if it has none. Re-running fills gaps only.
 disable-model-invocation: true
 ---
 
@@ -23,34 +23,31 @@ If the doc has no gaps, AGENTS.md links it and the README has its intro, the rep
 
 ## 2. Read Linear
 
-Read in parallel, then summarize what you found in one short message before interviewing:
+Read in parallel:
 
 - **Workspace and team:** `get_workspace` for its name; `list_teams`. Ignore retired teams. If several remain, ask which one this repo's issues live in. Record its name and key.
 - **Issue statuses:** `list_issue_statuses` for that team, in workflow order.
 - **Labels:** `list_issue_labels` with groups included, for the team and the workspace. Find the Product group (one label per product), the Dispatch target group (one label per tool doing the work), a Bug label, the `wayfinder:` decision labels, and retired labels (those with `retiredAt`). Report any other active label that fits none of these; don't add it to the doc.
-- **Project statuses:** read them from the team's projects (`list_projects`) and confirm the full set with the user; projects only show statuses in use, so ask which unused statuses exist (for example, an early planning status or an abandoned one).
+- **Project statuses:** read them from the team's projects (`list_projects`). Projects only show statuses in use, so the default set fills in the rest.
 - **Initiatives:** `list_initiatives`, with each description's first line.
 - **Views:** `list_custom_views`. Record views by exact name, never by URL: URLs carry workspace ids.
 - **Templates:** `list_templates`, for the implementation-issue template.
 
 If the doc already exists, compare it with what you read. Where Linear disagrees with a value in the doc (a renamed status, a deleted view), report the drift and leave the doc alone.
 
-## 3. Interview
+## 3. Settle the values
 
-Ask only about gaps, using AskUserQuestion when it is available (at most 4 questions per call; repeat rounds as needed). Offer concrete options drawn from what you read in Linear and from the [defaults](#defaults), with a recommended option first.
+Setup is opinionated: the same Linear workspace always gives the same doc. Settle every gap from what you read in Linear plus the [defaults](#defaults), without asking. Ask only where neither can settle it:
 
-- **Repo routing:** for each product initiative, show its first description line. It must be exactly `Repo: owner/name`, or `Repo: none` for a product with no repo yet. List the ones that are missing or malformed and ask what each should say. Offer to write those lines to the initiatives; only do it if the user says yes.
-- **Dispatch targets:** which tools do the work (for example Claude Code, Codex, Cursor, Conductor, Orca), the label for each, when each applies, how a session tells which one it is, and the default.
-- **Preferred models:** which model to use for which kind of work, the vendor pages to check them against, and how often to re-check. Fetch those pages to confirm the models, follow redirects and record the final URLs as Sources, then record today's date as **Checked**.
-- **Comment shape:** offer the default; ask only whether to change it.
-- **Meanings, in one pass:** propose a one-line meaning for each issue status, project status, label group and view, plus the team's scope, other clients that may access Linear, and how products map to initiatives (for example, whether some work has no product initiative). Let the user correct them together.
-- **Pull requests, triage and priority:** offer the defaults; ask only whether to change them.
+- **Team:** several active teams, so ask which one this repo uses.
+- **Repo routing:** a product initiative whose first description line isn't exactly `Repo: owner/name` or `Repo: none`. Ask what each one should say, and offer to write those lines to the initiatives; only do it if the user says yes.
+- **Unknown names:** an issue status, project status or Dispatch target label the defaults don't cover. Ask for a one-line meaning.
 
-If an answer is unknown, write a one-line `TODO:` under its heading and move on; a later run fills it.
+Ask these together in one AskUserQuestion call when it is available. If the user doesn't know an answer, write a one-line `TODO:` under its heading; a later run fills it.
 
 ## 4. Write the tracker doc
 
-Write the doc with exactly the headings below, in this order. Headings are keys the other skills look up by name: never rename them. Every `<…>` slot below is filled with a value or replaced by a `TODO:` line; none is copied into the doc as-is. Fill only the gaps, keep every existing line as it was, and show the user the diff (or the full draft, for a new doc) before saving.
+Write the doc with exactly the headings below, in this order. Headings are keys the other skills look up by name: never rename them. Every `<…>` slot below is filled with a value or replaced by a `TODO:` line; none is copied into the doc as-is. Fill only the gaps and keep every existing line as it was. Show the user the full draft for a new doc, or the diff for an existing one, and save once they approve. Corrections at that point are their only edits; don't turn the review into questions.
 
 Keep it public-safe: no secrets, internal URLs, workspace ids, machine names or personal data. Write example ids with the team's key, like `<KEY>-<number>`.
 
@@ -140,7 +137,31 @@ The skills hold the procedure. This file holds only the values they look up, und
 
 ### Defaults
 
-Offer these where the shape above leaves a choice. Replace `<KEY>` with the team's key.
+Use these wherever Linear doesn't settle a value. Replace `<KEY>` with the team's key and `<workspace>` with the workspace name.
+
+- **Tracker:** the opening line is "This is `<workspace>`'s config; to adopt, copy it and replace the values." Access is Linear MCP only; in an Orca workspace, the `orca linear` CLI also qualifies.
+- **Team scope:** the one team holds every product and company issue. With several active teams, it holds this repo's products.
+- **Issue statuses:** keep the team's workflow order. Use these meanings for the names that match:
+  - `Triage`: captured, not yet reviewed. Default for new issues.
+  - `Backlog`: in a map but not ready yet.
+  - `Todo`: ready. Blockers still decide whether work can start.
+  - `In Progress`: claimed, including draft PRs.
+  - `In Review`: PR out of draft and ready to merge. A draft PR stays `In Progress`. Set only by Linear's GitHub automation, never by agents.
+  - `Done`: decision resolved, or PR merged.
+  - `Canceled`: declined or won't do.
+  - `Duplicate`: duplicate of another issue.
+- **Project statuses:** the factory uses all six, whether or not a project is in one yet:
+  - `Uncharted`: stub map from triage, not yet charted.
+  - `Idea`: charted with a Destination; decisions still open, nothing sliced.
+  - `Planned`: enough decisions made that implementation issues are sliced or ready to slice.
+  - `Ongoing`: work has started.
+  - `Done`: Destination reached.
+  - `Won't Do`: abandoned.
+- **Labels:** Product is the product an issue belongs to and matches its initiative. Dispatch target is the tool doing the work. Bug is a concrete defect; a Triage item without it is a muse. For retired labels, list the workflow labels agents might reach for, then add "Any other label with `retiredAt` is retired too."
+- **Templates:** the team template whose name says it is for implementation issues; otherwise a `TODO:`.
+- **Initiatives:** each product has an initiative with the same name as its Product label, and its description opens with a `Repo:` line. If some initiatives have no Product label, or the reverse, say so in the doc and in the report.
+- **Dispatch targets:** one row per active label in the Dispatch target group, "Work dispatched from <label>", plus any note the label's description gives. Then: "The label records where the work was dispatched from, not where the session runs or which model ran. Set it when work starts." The default target is the label for the tool running this setup, if there is one; otherwise the first label.
+- **Preferred models:** for each vendor behind a Dispatch target, fetch its model page, follow redirects and record the final URL under Sources. Write one row for its strongest model and one for its fastest capable coding model, each with a one-line "use it for". Record today's date as **Checked**.
 
 - **Repo routing:**
   - **Source:** each product initiative's description opens with exactly `Repo: owner/name`, or `Repo: none` for a product with no repo yet. Several products may share a repo. This is the only product-to-repo mapping.

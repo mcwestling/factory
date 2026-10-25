@@ -49,7 +49,7 @@ Not used. Leave every issue at **No priority**.
 - **Dispatch target** (group, single-select): the tool doing the work. See [Dispatch targets](#dispatch-targets).
 - **Bug:** a concrete defect. A Triage item without it is a muse.
 - **Decision types:** `wayfinder:research`, `wayfinder:grilling`, `wayfinder:prototype`, `wayfinder:task`.
-- **Retired, never apply:** `ready-for-agent`, `ready-for-human`, `needs-triage`, `needs-info`, `wontfix`, `wayfinder:map`. Imported issues keep `legacy-status:wontfix`.
+- **Retired, never apply:** `ready-for-agent`, `ready-for-human`, `needs-triage`, `needs-info`, `wontfix`, `wayfinder:map`, the `Repo` group, and the `Conductor`, `Linear/Codex` and `Orca/Cursor` dispatch targets. Any other label with `retiredAt` is retired too.
 
 ## Templates
 
@@ -82,12 +82,13 @@ The label records where the work was dispatched from, not where the session runs
 
 ## Preferred models
 
-**Checked:** 2026-10-22, against the vendor pages under Sources. Re-check when this date is over 90 days old or a listed model retires.
+**Checked:** 2026-10-25, against the vendor pages under Sources. Re-check when this date is over 90 days old or a listed model retires.
 
 | Model            | Use it for                                                                     |
 | ---------------- | ------------------------------------------------------------------------------ |
 | Claude Opus 5.5  | Judgment-heavy, cross-cutting or ambiguous work; the maintainer in the session |
 | Claude Fable 5.1 | Long-horizon or hardest work, when Opus 5.5 at higher effort falls short       |
+| GPT-6 Astra      | Hardest end-to-end work in Codex, when GPT-6.1 Sol falls short                 |
 | GPT-6.1 Sol      | Complex implementation and agentic work                                        |
 | GPT-6 Luna       | Focused, pattern-following tickets where a good result is clear                |
 | Composer 2.5     | Mechanical changes, as a Cursor Cloud agent                                    |
@@ -96,7 +97,7 @@ The label records where the work was dispatched from, not where the session runs
 **Sources:**
 
 - Claude: <https://platform.claude.com/docs/en/about-claude/models/overview>
-- Codex: <https://developers.openai.com/codex/models>
+- Codex: <https://learn.chatgpt.com/docs/models>
 - Cursor: <https://cursor.com/docs/models>
 
 ## Views
