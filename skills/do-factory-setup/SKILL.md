@@ -35,14 +35,13 @@ Read in parallel:
 
 ## 3. Ask, once
 
-Collect everything below that applies, and ask it all in one AskUserQuestion round (at most 4 questions per call; more calls only if needed). Write each question for someone new to the factory: say what you found in plain words, give concrete options, and put the recommended one first. Skip anything the existing doc already settles.
+Collect everything below that applies, and ask it all in one AskUserQuestion round (at most 4 questions per call; more calls only if needed). Write each question for someone new to the factory: say what you found in plain words, say what each option will do, and put the recommended one first. If someone new couldn't answer it, don't ask: use the default. Skip anything the existing doc already settles.
 
 - **Team:** more than one active team. Which one does this repo's work live in?
 - **Repo line:** a product initiative whose first description line isn't exactly `Repo: owner/name` or `Repo: none`. Offer the likely repo (this one, if the name fits), `Repo: none`, and leaving it for later. Offer to write the answer to the initiative.
 - **Product label:** an initiative with no Product label of the same name, or the reverse. Offer to create the missing label or skip.
 - **Unknown names:** an issue status, or a label in the Dispatch target group, that the template doesn't have a row for. Ask what it's for, with your best guess as the first option.
 - **Default target:** the Dispatch target group has no `Orca` label. Which tool should do work by default?
-- **Template:** pick the implementation-issue template when the team has exactly one issue template, or exactly one whose name or description says "implementation". Otherwise ask which template agents should use for implementation issues, listing them.
 - **Missing views:** a `Factory:` view from the template that Linear doesn't have. Say the user needs to create it in Linear (the MCP can't), with the filters from the template; offer "I'll do it" or "Skip for now".
 - **Stale models:** a model the vendor page no longer lists. Offer to drop its row or keep it.
 - **Drift:** on a re-run, a value in the doc that Linear contradicts (a renamed status, a deleted view). Offer to update the doc line or keep it.
@@ -105,7 +104,7 @@ Slots are `{{…}}`. Fill them from Linear; everything else is copied exactly, i
 
 - `{{decision labels}}`: the team's `wayfinder:` labels that exist, in this order: `wayfinder:research`, `wayfinder:grilling`, `wayfinder:prototype`, `wayfinder:task`. Each in backticks, comma-separated.
 - `{{retired labels}}`: in this order, comma-separated: the retired labels among `ready-for-agent`, `ready-for-human`, `needs-triage`, `needs-info`, `wontfix`, `wayfinder:map` (in that order); then each retired label group as "the `<name>` group"; then retired Dispatch target labels, alphabetically, as "and the `A`, `B` and `C` dispatch targets".
-- `{{template}}`: the implementation-issue template, as `` `<name>` (team-scoped) `` or `` `<name>` (workspace) ``.
+- `{{template}}`: the one team issue template whose name or description says "implementation", as `` `<name>` (team-scoped) `` or `` `<name>` (workspace) ``. If there isn't exactly one, write `None. Agents write implementation issues without a Linear template` and don't ask.
 - **Dispatch target rows:** one row per active label in the Dispatch target group, in this table's order, then any others with the meaning the user gave in step 3.
 
   | Label           | Use it when                                                                      |
