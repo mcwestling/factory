@@ -1,10 +1,10 @@
 ---
 name: do-factory-setup
-description: Set up a repo for the factory skills. Writes the repo's values-only tracker doc (`docs/issue-tracker.md`) from Linear and a fixed template, asking only what neither settles. It points AGENTS.md at it, and writes the README's non-developer intro if it has none. Re-running fills gaps only.
+description: Set up a repo for the factory skills. Writes the repo's values-only tracker doc (`docs/issue-tracker.md`) from Linear and a fixed template, asking only what neither settles. It points AGENTS.md at it, writes the README's non-developer intro if it has none, and installs the dev-port convention in a repo with a dev server. Re-running fills gaps only.
 disable-model-invocation: true
 ---
 
-The other factory skills (`do-post-its`, `do-triage`, `do-refine`, `do-implement`) hold all of the procedure and none of the workspace values. Each repo keeps those values in one short **tracker doc**. Your job is to write that doc for the repo you are in, so the other skills can run here.
+The other factory skills (`do-post-its`, `do-triage`, `do-refine`, `do-implement`) hold all of the procedure and none of the workspace values. Each repo keeps those values in one short **tracker doc**. Your job is to write that doc for the repo you are in, so the other skills can run here. If the repo has a dev server, you also install the [dev-port convention](https://github.com/mcwestling/factory/blob/main/tools/orca/README.md), so parallel Orca workspaces each get their own ports.
 
 Setup is opinionated and deterministic: the same Linear workspace always gives the same doc. The doc is the [template](#template) below, copied verbatim, with only its `{{…}}` slots filled from Linear. Never reword, reorder or add to the template's text.
 
@@ -20,7 +20,8 @@ Use the Linear MCP server for every read (in an Orca workspace, `orca linear` al
 2. **Existing doc:** if it exists, read it. Every value already in it is settled: you never overwrite it, only fill gaps. A **gap** is a template heading that is missing or empty, or a line starting `TODO:`.
 3. **AGENTS.md:** note whether it links the tracker doc.
 4. **README:** read `README.md`, if any, and note whether it opens with a non-developer intro (see step 5).
-5. **Setup version:** the doc's `**Setup version:**` line records which version of this template wrote it; this skill's version is the one in its template. The same version means fill gaps only. A doc with no such line predates versioning: treat it as `2026-10-25` and add the line as a gap. A doc with a newer version than the skill means the skill is out of date: stop and tell the user to update the factory skills.
+5. **Dev server:** read the `dev` script in the root `package.json` (the workspace root's, in a monorepo), `scripts/dev-port`, and `orca.yaml`. No `package.json` or no `dev` script means no dev server: skip [Dev ports](#6-dev-ports).
+6. **Setup version:** the doc's `**Setup version:**` line records which version of this template wrote it; this skill's version is the one in its template. The same version means fill gaps only. A doc with no such line predates versioning: treat it as `2026-10-25` and add the line as a gap. A doc with a newer version than the skill means the skill is out of date: stop and tell the user to update the factory skills.
 
 ## 2. Read Linear
 
@@ -45,6 +46,7 @@ Collect everything below that applies, and ask it all in one AskUserQuestion rou
 - **Default target:** the Dispatch target group has no `Orca` label. Which tool should do work by default?
 - **Missing views:** a `Factory:` view from the template that Linear doesn't have. Say the user needs to create it in Linear (the MCP can't), with the filters from the template; offer "I'll do it" or "Skip for now".
 - **Stale models:** a model the vendor page no longer lists. Offer to drop its row or keep it.
+- **Dev command:** the `dev` script doesn't start the server itself (it calls a custom wrapper such as `node infra/scripts/dev-config.mjs`, or a task runner like `turbo dev`), so you can't tell with confidence how the server takes its port. Say in one sentence which file picks the port, then offer to edit that file so each workspace gets its own port, or to skip for now (every workspace keeps the current port). Never guess.
 - **Drift:** on a re-run, a value in the doc that Linear contradicts (a renamed status, a deleted view). Offer to update the doc line or keep it.
 
 Labels Linear has that the template doesn't use (like a `Release` label) are fine: say nothing about them.
@@ -79,11 +81,31 @@ Draft it from the repo itself (code, existing docs, the product's initiative des
 
 **Public safety:** say what it does and who it's for. Never include secrets, internal URLs, workspace or machine ids, personal data, or client details, unless the client is already public about it.
 
-## 6. Finish
+## 6. Dev ports
 
-If nothing was written, say "Looks good, we're set up!" and stop.
+Skip this step if step 1 found no dev server. Otherwise do each part that isn't already in place. Never touch the per-machine registry; the script manages it.
 
-Otherwise, say "Looks good, we're set up!" and add one line naming the files you wrote, so the user can review them with `git diff`. Nothing else.
+1. **Vendor:** copy the `dev-port` beside this file to `scripts/dev-port`, executable. If `scripts/dev-port` exists and differs (`cmp`), replace it: the skill's copy is the canonical one.
+2. **Claim early:** make sure `orca.yaml` `scripts.setup` runs `./scripts/dev-port`, so the worktree claims its ports when Orca creates it. If `orca.yaml` is missing, create it with just:
+
+   ```yaml
+   scripts:
+     setup: ./scripts/dev-port
+   ```
+
+   If `scripts.setup` already has a command, chain after it (`<existing> && ./scripts/dev-port`, or a new last line in a block scalar). Never replace it.
+
+3. **Wrap the dev command:** in place when the `dev` script already mentions `scripts/dev-port`. Otherwise prefix the server command so it starts on the workspace's port, passing it the way the server takes one:
+
+   ```sh
+   PORT="${PORT:-$(./scripts/dev-port)}" && export PORT && next dev -p "$PORT"
+   ```
+
+   Use `vite --port "$PORT"` for Vite, and no flag for a server that reads `PORT` itself. Keep the rest of the command as it was. If the [questions](#3-ask-once) covered the dev command and the user said edit, change that file to take its port from `PORT` and start the `dev` script with the `PORT=…` prefix above. If they skipped, leave it.
+
+## 7. Finish
+
+Say "Looks good, we're set up!". If you wrote anything, add one line naming the files, so the user can review them with `git diff`. Add a few words if dev ports were skipped for having no dev server, or if you replaced a `scripts/dev-port` that had drifted. Nothing else.
 
 ## Template
 

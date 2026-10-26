@@ -1,6 +1,6 @@
 # Orca dev ports
 
-Orca doesn't assign ports, so dev servers in parallel workspaces fight over the same one. `dev-port` gives each worktree its own block of 10 ports.
+Orca doesn't assign ports, so dev servers in parallel workspaces fight over the same one. [`dev-port`](../../skills/do-factory-setup/dev-port) gives each worktree its own block of 10 ports. The script lives in the `do-factory-setup` skill folder, so installed skills can copy it into any repo offline.
 
 ## The convention
 
@@ -13,18 +13,20 @@ Orca doesn't assign ports, so dev servers in parallel workspaces fight over the 
 
 ## Adopting it
 
+`do-factory-setup` does these steps for any repo with a `dev` script in `package.json`. By hand:
+
 1. Copy `dev-port` into the repo, for example to `scripts/dev-port`. Vendor it; never fetch it at runtime.
-2. Add it to `orca.yaml` `scripts.setup` to claim a block when the worktree is created:
+2. Add it to `orca.yaml` `scripts.setup` to claim a block when the worktree is created. Chain it after any setup command already there:
 
    ```yaml
    scripts:
-     setup: ./scripts/dev-port
+     setup: pnpm bootstrap && ./scripts/dev-port
    ```
 
-3. Wrap the dev command:
+3. Wrap the dev command, passing the port the way the server takes one (`next dev -p "$PORT"`, `vite --port "$PORT"`, or nothing for a server that reads `PORT`):
 
    ```sh
-   PORT="${PORT:-$(./scripts/dev-port)}" <server>
+   PORT="${PORT:-$(./scripts/dev-port)}" && export PORT && <server>
    ```
 
 A worktree that never ran the setup hook gets its block on its first dev start.
@@ -32,6 +34,6 @@ A worktree that never ran the setup hook gets its block on its first dev start.
 ## Checking it
 
 ```sh
-sh tools/orca/dev-port.test.sh
-shellcheck tools/orca/dev-port tools/orca/dev-port.test.sh
+sh skills/do-factory-setup/dev-port.test.sh
+shellcheck skills/do-factory-setup/dev-port skills/do-factory-setup/dev-port.test.sh
 ```
