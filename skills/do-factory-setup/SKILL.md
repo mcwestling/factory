@@ -47,6 +47,7 @@ Collect everything below that applies, and ask it all in one AskUserQuestion rou
 - **Missing views:** a `Factory:` view from the template that Linear doesn't have. Say the user needs to create it in Linear (the MCP can't), with the filters from the template; offer "I'll do it" or "Skip for now".
 - **Stale models:** a model the vendor page no longer lists. Offer to drop its row or keep it.
 - **Dev command:** the `dev` script doesn't start the server itself (it calls a custom wrapper such as `node infra/scripts/dev-config.mjs`, or a task runner like `turbo dev`), so you can't tell with confidence how the server takes its port. Say in one sentence which file picks the port, then offer to edit that file so each workspace gets its own port, or to skip for now (every workspace keeps the current port). Never guess.
+- **Template:** the team has issue templates, but not exactly one whose name or description says "implementation". Which one do agents use to write implementation issues? Offer each template by name, plus "None" (agents write them without a Linear template).
 - **Drift:** on a re-run, a value in the doc that Linear contradicts (a renamed status, a deleted view). Offer to update the doc line or keep it.
 
 Labels Linear has that the template doesn't use (like a `Release` label) are fine: say nothing about them.
@@ -127,7 +128,7 @@ Slots are `{{…}}`. Fill them from Linear; everything else is copied exactly, i
 
 - `{{decision labels}}`: the team's `wayfinder:` labels that exist, in this order: `wayfinder:research`, `wayfinder:grilling`, `wayfinder:prototype`, `wayfinder:task`. Each in backticks, comma-separated.
 - `{{retired labels}}`: in this order, comma-separated: the retired labels among `ready-for-agent`, `ready-for-human`, `needs-triage`, `needs-info`, `wontfix`, `wayfinder:map` (in that order); then each retired label group as "the `<name>` group"; then retired Dispatch target labels, alphabetically, as "and the `A`, `B` and `C` dispatch targets".
-- `{{template}}`: the one team issue template whose name or description says "implementation", as `` `<name>` (team-scoped) `` or `` `<name>` (workspace) ``. If there isn't exactly one, write `None. Agents write implementation issues without a Linear template` and don't ask.
+- `{{template}}`: the one team issue template whose name or description says "implementation", as `` `<name>` (team-scoped) `` or `` `<name>` (workspace) ``. If the team has no issue templates, write `None. Agents write implementation issues without a Linear template` and don't ask. If none matches or several do, use the user's answer from step 3: the template they picked, or the `None` line.
 - **Dispatch target rows:** one row per active label in the Dispatch target group, in this table's order, then any others with the meaning the user gave in step 3.
 
   | Label           | Use it when                                                                      |
