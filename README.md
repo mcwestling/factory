@@ -33,8 +33,10 @@ People who plan their work in Linear and want coding agents to do more of the bu
 ├── AGENTS.md              # Rules for agents working in this repo
 ├── docs/
 │   └── issue-tracker.md   # McWestling's tracker values; the worked example
-└── skills/
-    └── <name>/            # One folder per skill: SKILL.md, agents/openai.yaml
+├── skills/
+│   └── <name>/            # One folder per skill: SKILL.md, agents/openai.yaml
+└── tools/
+    └── orca/              # dev-port: per-workspace dev-server ports
 ```
 
 ## Skills

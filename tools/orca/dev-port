@@ -1,0 +1,58 @@
+#!/bin/sh
+# Print this worktree's dev-server base port. The worktree owns PORT to PORT+9.
+# See README.md beside this script for the convention.
+set -eu
+
+first=55000
+last=55990
+state="${XDG_STATE_HOME:-$HOME/.local/state}/factory"
+registry="$state/dev-ports"
+lock="$registry.lock"
+
+worktree=$(git rev-parse --show-toplevel)
+
+mkdir -p "$state"
+touch "$registry"
+
+# A mkdir lock, so concurrent runs can't claim the same block.
+tries=0
+until mkdir "$lock" 2>/dev/null; do
+  tries=$((tries + 1))
+  if [ "$tries" -ge 10 ]; then
+    echo "dev-port: timed out waiting for $lock; remove it if no dev-port is running" >&2
+    exit 1
+  fi
+  sleep 1
+done
+trap 'rm -rf "$lock"' EXIT
+trap 'exit 1' INT TERM HUP
+
+# Lines are "<path> <port>"; the path may contain spaces, the port can't.
+while IFS= read -r line; do
+  if [ "${line% *}" = "$worktree" ]; then
+    echo "${line##* }"
+    exit 0
+  fi
+done < "$registry"
+
+# Keep only entries whose worktree still exists.
+kept=$(while IFS= read -r line; do
+  if [ -n "$line" ] && [ -d "${line% *}" ]; then echo "$line"; fi
+done < "$registry")
+
+port=$first
+while [ "$port" -le "$last" ]; do
+  if ! printf '%s\n' "$kept" | grep -q " $port\$" &&
+    ! nc -z -w 1 127.0.0.1 "$port" 2>/dev/null; then
+    tmp="$registry.tmp"
+    { if [ -n "$kept" ]; then printf '%s\n' "$kept"; fi
+      echo "$worktree $port"; } > "$tmp"
+    mv "$tmp" "$registry"
+    echo "$port"
+    exit 0
+  fi
+  port=$((port + 10))
+done
+
+echo "dev-port: all 100 port blocks ($first-$((last + 9))) are taken; see $registry" >&2
+exit 1
