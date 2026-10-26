@@ -1,5 +1,5 @@
 interface:
   display_name: "Do Factory Setup"
-  short_description: "Write a repo's tracker doc from Linear and a fixed template"
+  short_description: "Write a repo's tracker doc from Linear and install dev ports"
 policy:
   allow_implicit_invocation: false
