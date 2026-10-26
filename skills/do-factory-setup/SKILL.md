@@ -46,7 +46,7 @@ Collect everything below that applies, and ask it all in one AskUserQuestion rou
 - **Default target:** the Dispatch target group has no `Orca` label. Which tool should do work by default?
 - **Missing views:** a `Factory:` view from the template that Linear doesn't have. Say the user needs to create it in Linear (the MCP can't), with the filters from the template; offer "I'll do it" or "Skip for now".
 - **Stale models:** a model the vendor page no longer lists. Offer to drop its row or keep it.
-- **Dev command:** the `dev` script doesn't start the server itself (it calls a custom wrapper such as `node infra/scripts/dev-config.mjs`, or a task runner like `turbo dev`), so you can't tell with confidence how the server takes its port. Offer the places you see where the port could go, and skipping for now. Never guess.
+- **Dev command:** the `dev` script doesn't start the server itself (it calls a custom wrapper such as `node infra/scripts/dev-config.mjs`, or a task runner like `turbo dev`), so you can't tell with confidence how the server takes its port. Say in one sentence which file picks the port, then offer to edit that file so each workspace gets its own port, or to skip for now (every workspace keeps the current port). Never guess.
 - **Drift:** on a re-run, a value in the doc that Linear contradicts (a renamed status, a deleted view). Offer to update the doc line or keep it.
 
 Labels Linear has that the template doesn't use (like a `Release` label) are fine: say nothing about them.
@@ -101,7 +101,7 @@ Skip this step if step 1 found no dev server. Otherwise do each part that isn't 
    PORT="${PORT:-$(./scripts/dev-port)}" && export PORT && next dev -p "$PORT"
    ```
 
-   Use `vite --port "$PORT"` for Vite, and no flag for a server that reads `PORT` itself. Keep the rest of the command as it was. If the [questions](#3-ask-once) covered the dev command, do what the user picked; if they skipped, leave it.
+   Use `vite --port "$PORT"` for Vite, and no flag for a server that reads `PORT` itself. Keep the rest of the command as it was. If the [questions](#3-ask-once) covered the dev command and the user said edit, change that file to take its port from `PORT` and start the `dev` script with the `PORT=…` prefix above. If they skipped, leave it.
 
 ## 7. Finish
 
