@@ -8,7 +8,8 @@ script="$(cd "$(dirname "$0")" && pwd)/dev-port"
 tmp=$(cd "$(mktemp -d)" && pwd -P)
 listener=
 cleanup() {
-  if [ -n "$listener" ]; then kill "$listener" 2>/dev/null || true; fi
+  # shellcheck disable=SC2086 # $listener is a list of pids
+  if [ -n "$listener" ]; then kill $listener 2>/dev/null || true; fi
   rm -rf "$tmp"
 }
 trap cleanup EXIT
@@ -33,11 +34,13 @@ grep -q "^$tmp/a " "$registry" && fail "removed worktree should be pruned"
 echo "ok: removed worktree's block reused"
 
 rm -rf "$tmp/b" "$tmp/c"
-nc -l 55000 >/dev/null 2>&1 &
+nc -l 127.0.0.1 55000 >/dev/null 2>&1 &
 listener=$!
+nc -6 -l ::1 55010 >/dev/null 2>&1 &
+listener="$listener $!"
 sleep 1
 repo d
-[ "$(port_in d)" = 55010 ] || fail "a listening base port should be skipped"
+[ "$(port_in d)" = 55020 ] || fail "listening base ports (IPv4 and IPv6) should be skipped"
 echo "ok: listening port skipped"
 
 rm -rf "$tmp/d"
