@@ -34,7 +34,7 @@ Before any other work: assign the issue to yourself, move it to the in-progress 
 
 Pick the label from the host environment, not from the model you run on. The tracker doc says which signal maps to which label; hosts usually announce themselves through environment variables (for example an Orca or Conductor workspace id). Use a plain CLI label (for example Claude or Codex) only when no orchestrator's signal is set. If a dispatch integration already claimed the issue, only check the label.
 
-If you can't start after claiming (the repo won't build, access is missing), move the issue back to the ready status, or leave it claimed with a comment that says what blocks it and what comes next.
+If you can't start after claiming (the repo won't build, access is missing), comment on the issue with what blocks it and what comes next, unassign yourself, and move it back to the ready status.
 
 ## 3. Ask before guessing
 
@@ -44,15 +44,15 @@ A small, reversible call inside the brief's requirements is yours to make. Note 
 
 ## 4. Build
 
-1. **Branch.** Name it per **Pull requests**. Before the first commit, compare the current branch with that name and rename it (`git branch -m <name>`) if they differ; orchestrators often create their own prefixed branches. A host that must choose its own branch name (some cloud agents do) keeps it. If the repo's PR automation needs a label for that branch, per **Pull requests**, apply it when you open the PR.
+1. **Branch.** Name it per **Pull requests**; if the doc is silent, use the branch name the tracker gives the issue. Before the first commit, compare the current branch with that name and rename it (`git branch -m <name>`) if they differ; orchestrators often create their own prefixed branches. A host that must choose its own branch name (for example a Cursor Cloud agent) keeps it. If the repo's PR autopilot needs a label for that branch, per **Pull requests**, apply it when you open the PR.
 2. **Test first.** Where the change has a testable seam, call the `tdd` skill and write the failing test before the code. Without the skill, follow the same red-green loop by hand.
 3. **Check as you go.** Run the repo's typecheck and the test files you touch, per `AGENTS.md`.
-4. **Stay in scope.** Build only the brief's requirements, and respect its **Out of scope**. File anything else you find as a new issue in the triage status per **Issue statuses**: a short title, what you saw, and the Product label. Keep it flat (no parent issue, even if a host tool offers one) and link it to this issue as related. Link it in the PR too.
+4. **Stay in scope.** Build only the brief's requirements, and respect its **Out of scope**. File anything else you find as a new issue in the triage status per **Issue statuses**: a short title, what you saw, this issue's project, and a Product label when the product is obvious. Keep it flat (no parent issue, even if a host tool offers one) and link it to this issue as related. Link it in the PR too.
 5. **Follow the repo's rules.** Follow every repo playbook the change touches, and never edit what `AGENTS.md` says not to.
 
 ## 5. See it work
 
-For changes a person can see or use (UI, sign-in), run the app per `AGENTS.md` and walk each acceptance criterion by hand, in a browser where there is one. Write the steps you took as a numbered **Test plan** for the PR. Changes nobody can see skip this step.
+For changes a person can see or use (UI, sign-in), run the app per `AGENTS.md` and walk each acceptance criterion by hand, in a browser where there is one. Write the steps you took as a numbered **Test plan** for the PR, in the format the repo's docs set, if any. Changes nobody can see skip this step.
 
 ## 6. Review your own diff
 
@@ -67,7 +67,7 @@ Call the `code-review` skill on the diff against the default branch (or make an 
 ## 8. Open the draft PR
 
 - **Title** per **Pull requests**: a plain imperative subject ending with the issue id in parentheses, like `Fix the login redirect bug (ABC-123)`.
-- **Body:** the repo's PR template, if it has one. Include the verification output, the Test plan from step 5, the calls you made under step 3, and links to any issues you filed. Put the issue id in the body too, so the tracker links the PR.
+- **Body:** the repo's PR template, if it has one. Include the verification output, the Test plan from step 5, the calls you made under step 3, links to any issues you filed, and any doc closeout line `AGENTS.md` asks for. Put the issue id in the body too, so the tracker links the PR.
 - Open it as a **draft**. Never mark it ready by hand.
 - Post the **PR opened** comment per **Comment shape** on the issue. The issue stays in progress; only the automation named under **Issue statuses** moves it to review. If a host tool offers to change the status when the PR opens, skip that.
 
@@ -75,8 +75,8 @@ Call the `code-review` skill on the diff against the default branch (or make an 
 
 Wait for the checks with the host's PR monitor if it has one, otherwise `gh pr checks <number> --watch`.
 
-- **PR automation** (per **Pull requests**): it posts a verdict for each head commit. On "ready", stop and report the PR and its verdict. On "needs a fix", follow its hand-back steps in order.
-- **No PR automation:** when every check passes, stop and report the PR. The maintainer reviews, marks it ready and merges.
+- **PR autopilot** (per **Pull requests**): it posts a verdict for each head commit. On "ready", stop and report the PR and its verdict. On "needs a fix", follow its hand-back steps in order.
+- **No PR autopilot:** when every check passes, stop and report the PR. The maintainer reviews, marks it ready and merges.
 - **A failure:** reproduce it locally, fix its cause, then repeat step 7 and push.
 - After **three** fix rounds that still fail, stop. Comment on the PR and the issue with what is still failing and what you tried.
 
@@ -90,7 +90,8 @@ Closeout happens only once the PR has merged: in a later session the user starts
 2. Link the merged PR on the issue.
 3. Check off the acceptance criteria that are met.
 4. Post a completion comment with a dateline per **Comment shape**: what landed, and any follow-ups.
-5. If the issue sits on a map, update the map per [do-refine's Maps section](../do-refine/SKILL.md#maps). Set the map to its finished status only when its Destination is reached and no open issues remain.
+5. Do any doc closeout the repo's `AGENTS.md` asks for.
+6. If the issue sits on a map, update the map per [do-refine's Maps section](../do-refine/SKILL.md#maps). Set the map to its finished status only when its Destination is reached and no open issues remain.
 
 If only some criteria landed, the issue stays in progress, with a comment saying what landed and what remains.
 
