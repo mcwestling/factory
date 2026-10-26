@@ -25,7 +25,7 @@ Read and write the tracker only through the access the tracker doc's **Tracker**
 1. **One issue.** If the user names several, ask which to take first.
 2. **Fetch** the issue and its comments, and state its title. Comments can amend the brief; read them all.
 3. **Dispatchable.** It must be an implementation issue (no `wayfinder:` label), in the ready status per **Issue statuses**, and pass every gate in [dispatch-gates.md](../do-refine/dispatch-gates.md): in particular, every blocker done and no open human gate. An issue already in progress and assigned to you by a dispatch integration also counts. If it fails, stop and say which gate.
-4. **Repo.** Read the repo tag from the description. If it has none, resolve it per **Repo routing** and add the tag before starting. Check that this checkout's `origin` is that repo, and run the cross-check **Repo routing** gives. If the repo can't be resolved, isn't this checkout, or anything disagrees, stop and say which repo the issue needs. Never guess, and never work in another repo.
+4. **Repo.** Read the repo tag from the description. If it has none, resolve it per **Repo routing** and add the tag before starting, as the first line of the **Agent brief**, where [brief-template.md](../do-refine/brief-template.md) puts it. Check that this checkout's `origin` is that repo, and run the cross-check **Repo routing** gives. If the repo can't be resolved, isn't this checkout, or anything disagrees, stop and say which repo the issue needs. Never guess, and never work in another repo.
 5. **Context.** Read the brief's Context, the decisions and specs it links, and the files on its **Touches:** line. Use the repo's domain language if it keeps a glossary.
 
 ## 2. Claim
@@ -89,7 +89,7 @@ Closeout happens only once the PR has merged: in a later session the user starts
 1. Set the issue to the done status (the tracker's automation may already have).
 2. Link the merged PR on the issue.
 3. Check off the acceptance criteria that are met.
-4. Post a completion comment with a dateline per **Comment shape**: what landed, and any follow-ups.
+4. Post a completion comment with a dateline per **Comment shape**: what landed, and any follow-ups. Post it even when the tracker's automation already set the issue done; it's the record that closeout ran.
 5. Do any doc closeout the repo's `AGENTS.md` asks for.
 6. If the issue sits on a map, update the map per [do-refine's Maps section](../do-refine/SKILL.md#maps). Set the map to its finished status only when its Destination is reached and no open issues remain.
 
