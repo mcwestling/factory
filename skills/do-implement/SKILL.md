@@ -24,7 +24,9 @@ Read and write the tracker only through the access the tracker doc's **Tracker**
 
 1. **One issue.** If the user names several, ask which to take first.
 2. **Fetch** the issue and its comments, and state its title. Comments can amend the brief; read them all.
-3. **Dispatchable.** It must be an implementation issue (no `wayfinder:` label), in the ready status per **Issue statuses**, and pass every gate in [dispatch-gates.md](../do-refine/dispatch-gates.md): in particular, every blocker done and no open human gate. An issue already in progress and assigned to you by a dispatch integration also counts. If it fails, stop and say which gate.
+3. **Dispatchable.** It must be an implementation issue (no `wayfinder:` label), in the ready status per **Issue statuses**, and pass every gate in [dispatch-gates.md](../do-refine/dispatch-gates.md): in particular, every blocker done and no open human gate. An issue already in progress and assigned to you also counts, whether a dispatch integration or an earlier session claimed it. If it fails, stop and say which gate.
+
+   **Resuming:** if the issue already has your branch or PR, check it out and carry on from where it stands, usually [Build](#4-build) or [the hosted checks](#9-work-the-hosted-checks). Don't open a second PR.
 4. **Repo.** Read the repo tag from the description. If it has none, resolve it per **Repo routing** and add the tag before starting, as the first line of the **Agent brief**, where [brief-template.md](../do-refine/brief-template.md) puts it. Check that this checkout's `origin` is that repo, and run the cross-check **Repo routing** gives. If the repo can't be resolved, isn't this checkout, or anything disagrees, stop and say which repo the issue needs. Never guess, and never work in another repo.
 5. **Context.** Read the brief's Context, the decisions and specs it links, and the files on its **Touches:** line. Use the repo's domain language if it keeps a glossary.
 
@@ -32,7 +34,7 @@ Read and write the tracker only through the access the tracker doc's **Tracker**
 
 Before any other work: assign the issue to yourself, move it to the in-progress status, and set the dispatch target label per **Dispatch targets**.
 
-Pick the label from the host environment, not from the model you run on. The tracker doc says which signal maps to which label; hosts usually announce themselves through environment variables (for example an Orca or Conductor workspace id). Use a plain CLI label (for example Claude or Codex) only when no orchestrator's signal is set. If a dispatch integration already claimed the issue, only check the label.
+Pick the label from the host environment, not from the model you run on. The tracker doc says which signal maps to which label; hosts usually announce themselves through environment variables (for example an Orca or Conductor workspace id). Use a plain CLI label (for example Claude or Codex) only when no orchestrator's signal is set. If the issue is already claimed by you or a dispatch integration, only check the label.
 
 If you can't start after claiming (the repo won't build, access is missing), comment on the issue with what blocks it and what comes next, unassign yourself, and move it back to the ready status.
 
@@ -44,7 +46,7 @@ A small, reversible call inside the brief's requirements is yours to make. Note 
 
 ## 4. Build
 
-1. **Branch.** Name it per **Pull requests**; if the doc is silent, use the branch name the tracker gives the issue. Before the first commit, compare the current branch with that name and rename it (`git branch -m <name>`) if they differ; orchestrators often create their own prefixed branches. A host that must choose its own branch name (for example a Cursor Cloud agent) keeps it. If the repo's PR autopilot needs a label for that branch, per **Pull requests**, apply it when you open the PR.
+1. **Branch.** Name it per **Pull requests**; if the doc is silent, use the branch name the tracker gives the issue. If that branch already exists, locally or on `origin`, switch to it. Otherwise, if the current branch is a fresh one the host made for this workspace (no commits beyond the default branch), rename it (`git branch -m <name>`); orchestrators often create their own prefixed branches. Otherwise create the branch from the latest default branch. Never rename the default branch, or a branch holding another issue's commits. A host that must choose its own branch name (for example a Cursor Cloud agent) keeps it. If the repo's PR autopilot needs a label for that branch, per **Pull requests**, apply it when you open the PR.
 2. **Test first.** Where the change has a testable seam, call the `tdd` skill and write the failing test before the code. Without the skill, follow the same red-green loop by hand.
 3. **Check as you go.** Run the repo's typecheck and the test files you touch, per `AGENTS.md`.
 4. **Stay in scope.** Build only the brief's requirements, and respect its **Out of scope**. File anything else you find as a new issue in the triage status per **Issue statuses**: a short title, what you saw, this issue's project, and a Product label when the product is obvious. Keep it flat (no parent issue, even if a host tool offers one) and link it to this issue as related. Link it in the PR too.
