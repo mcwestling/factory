@@ -1,0 +1,5 @@
+interface:
+  display_name: "Do Implement"
+  short_description: "Take one implementation issue to a verified draft PR"
+policy:
+  allow_implicit_invocation: false
