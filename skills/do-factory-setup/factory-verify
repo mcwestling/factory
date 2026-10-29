@@ -1,182 +1,141 @@
-#!/bin/sh
-# Read .factory/verify.toml and select or run its checks.
-set -eu
+#!/usr/bin/env python3
+"""Select and run checks from .factory/verify.toml. Requires Python 3.11+ and Git."""
 
-usage() {
-  echo 'Usage: factory-verify plan --base <sha> --head <sha> | run <check> | run --all' >&2
-  exit 2
-}
-die() { printf 'factory-verify: %s\n' "$*" >&2; exit 1; }
+import sys
 
-[ "$#" -gt 0 ] || usage
-mode=$1
-case "$mode" in
-  plan)
-    [ "$#" -eq 5 ] && [ "$2" = --base ] && [ "$4" = --head ] || usage
-    base=$3 head=$5
-    for sha in "$base" "$head"; do
-      case "$sha" in ''|*[!0-9a-fA-F]*) die "expected a commit SHA: $sha" ;; esac
-      git rev-parse --verify "$sha^{commit}" >/dev/null || exit 1
-    done
-    ;;
-  run)
-    [ "$#" -eq 2 ] || usage
-    target=$2
-    ;;
-  *) usage ;;
-esac
+if sys.version_info < (3, 11):
+    sys.exit(
+        "factory-verify requires Python 3.11 or newer; "
+        "install or upgrade Python and put it on PATH."
+    )
 
-root=$(git rev-parse --show-toplevel)
-cd "$root"
-contract=.factory/verify.toml
-[ -f "$contract" ] && [ -r "$contract" ] || die "$contract:1: cannot read contract"
+import argparse
+from dataclasses import dataclass
+import json
+from pathlib import Path
+import re
+import subprocess
+import tomllib
 
-# Validate the whole file before emitting safely quoted shell function calls.
-parsed=$(LC_ALL=C awk '
-  function error(message) {
-    print FILENAME ":" (FNR ? FNR : 1) ": " message
-    failed = 1
-    exit 1
-  }
-  function trim() { sub(/^[ \t\r]+/, "", rest) }
-  function endline() {
-    trim()
-    if (rest != "" && substr(rest, 1, 1) != "#") error("unexpected syntax")
-  }
-  function string(    value, c, escape) {
-    trim()
-    if (substr(rest, 1, 1) != "\"") error("expected a double-quoted string")
-    rest = substr(rest, 2)
-    value = ""
-    while (length(rest)) {
-      c = substr(rest, 1, 1)
-      rest = substr(rest, 2)
-      if (c == "\"") return value
-      if (c != "\t" && c ~ /[[:cntrl:]]/) error("control character in string")
-      if (c == "\\") {
-        # The contract supports common escapes, but not Unicode escapes.
-        escape = substr(rest, 1, 1)
-        rest = substr(rest, 2)
-        if (escape == "\"" || escape == "\\") c = escape
-        else if (escape == "b") c = "\b"
-        else if (escape == "t") c = "\t"
-        else if (escape == "n") c = "\n"
-        else if (escape == "f") c = "\f"
-        else if (escape == "r") c = "\r"
-        else error("unsupported string escape")
-      }
-      value = value c
-    }
-    error("unterminated string; values must fit on one line")
-  }
-  function quote(value,    result, i, c, sq) {
-    sq = sprintf("%c", 39)
-    result = sq
-    for (i = 1; i <= length(value); i++) {
-      c = substr(value, i, 1)
-      result = result (c == sq ? sq "\\" sq sq : c)
-    }
-    return result sq
-  }
-  {
-    rest = $0
-    trim()
-    if (rest == "" || substr(rest, 1, 1) == "#") next
-    if (rest ~ /^\[checks\.[a-z0-9]+(-[a-z0-9]+)*\]/) {
-      name = rest
-      sub(/^\[checks\./, "", name)
-      sub(/\].*$/, "", name)
-      sub(/^[^]]*\]/, "", rest)
-      endline()
-      if (name in lines) error("duplicate check " name)
-      order[++count] = name
-      lines[name] = FNR
-      next
-    }
-    if (rest !~ /^(version|run|paths)[ \t]*=/) error("unsupported key or table")
-    key = rest
-    sub(/[ \t]*=.*/, "", key)
-    sub(/^[^=]*=[ \t]*/, "", rest)
-    if (key == "version") {
-      if (name != "" || version++) error("version must appear once before checks")
-      if (rest !~ /^1([ \t\r#]|$)/) error("expected version = 1")
-      rest = substr(rest, 2)
-      endline()
-    } else {
-      if (name == "") error("check field outside a check table")
-      if (seen[name, key]++) error("duplicate " key)
-      if (key == "run") {
-        runs[name] = string()
-      } else {
-        if (substr(rest, 1, 1) != "[") error("expected a one-line paths array")
-        rest = substr(rest, 2)
-        while (1) {
-          path = string()
-          if (path == "") error("trigger path must not be empty")
-          paths[name] = paths[name] " " quote(":(glob)" path)
-          trim()
-          if (substr(rest, 1, 1) == "]") break
-          if (substr(rest, 1, 1) != ",") error("expected comma or closing bracket")
-          rest = substr(rest, 2)
-          trim()
-          if (substr(rest, 1, 1) == "]") break
-        }
-        rest = substr(rest, 2)
-      }
-      endline()
-    }
-  }
-  END {
-    if (failed) exit 1
-    if (!version) error("missing version = 1")
-    for (i = 1; i <= count; i++) {
-      name = order[i]
-      if (!seen[name, "run"] || !seen[name, "paths"]) {
-        FNR = lines[name]
-        error("check " name " requires run and non-empty paths")
-      }
-    }
-    for (i = 1; i <= count; i++) {
-      name = order[i]
-      print "check " quote(name) " " quote(runs[name]) paths[name]
-    }
-  }
-' "$contract") || { printf '%s\n' "$parsed" >&2; exit 1; }
 
-selected=
-separator=
-found=0
-result=0
-check() {
-  name=$1
-  command=$2
-  shift 2
-  if [ "$mode" = run ]; then
-    if [ "$target" = --all ]; then
-      if sh -c "$command"; then
-        printf 'PASS %s\n' "$name"
-      else
-        printf 'FAIL %s\n' "$name"
-        result=1
-      fi
-    elif [ "$target" = "$name" ]; then
-      found=1
-      sh -c "$command" || exit "$?"
-    fi
-    return
-  fi
-  if git diff --quiet --no-ext-diff --no-textconv "$base...$head" -- "$@"; then
-    return
-  else
-    status=$?
-    [ "$status" -eq 1 ] || exit "$status"
-  fi
-  selected="$selected$separator\"$name\""
-  separator=,
-}
-eval "$parsed"
-if [ "$mode" = run ]; then
-  [ "$target" = --all ] || [ "$found" -eq 1 ] || die "unknown check: $target"
-  exit "$result"
-fi
-printf '{"base":"%s","head":"%s","checks":[%s]}\n' "$base" "$head" "$selected"
+@dataclass
+class Check:
+    name: str
+    run: str
+    paths: list[str]
+
+
+def read_checks(root):
+    path = Path(".factory/verify.toml")
+    try:
+        source = (root / path).read_text(encoding="utf-8")
+        data = tomllib.loads(source)
+    except (OSError, UnicodeError, tomllib.TOMLDecodeError) as error:
+        message = str(error)
+        if isinstance(error, tomllib.TOMLDecodeError) and "at end of document" in message:
+            line = source.count("\n") + 1
+            message += f"; line {line}"
+        raise ValueError(f"{path}: {message}") from error
+
+    def invalid(message):
+        raise ValueError(f"{path}: {message}")
+
+    if type(data.get("version")) is not int or data["version"] != 1:
+        invalid("expected version = 1")
+    unknown = data.keys() - {"version", "checks"}
+    if unknown:
+        invalid(f"unknown keys: {', '.join(sorted(unknown))}")
+    tables = data.get("checks", {})
+    if not isinstance(tables, dict):
+        invalid("checks must be a table")
+    checks = []
+    for name, fields in tables.items():
+        if not re.fullmatch(r"[a-z0-9]+(-[a-z0-9]+)*", name):
+            invalid(f"invalid check name: {name}")
+        if not isinstance(fields, dict):
+            invalid(f"checks.{name} must be a table")
+        unknown = fields.keys() - {"run", "paths"}
+        if unknown:
+            invalid(f"checks.{name}: unknown keys: {', '.join(sorted(unknown))}")
+        command = fields.get("run")
+        if not isinstance(command, str) or "\0" in command:
+            invalid(f"checks.{name}.run must be a string without NUL characters")
+        paths = fields.get("paths")
+        if (
+            not isinstance(paths, list) or not paths
+            or any(not isinstance(path, str) or not path or "\0" in path for path in paths)
+        ):
+            invalid(
+                f"checks.{name}.paths must be a non-empty array of "
+                "non-empty strings without NUL characters"
+            )
+        checks.append(Check(name, command, paths))
+    return checks
+
+
+def run_check(root, check):
+    status = subprocess.run(["sh", "-c", check.run], cwd=root).returncode
+    return status if status >= 0 else 128 - status
+
+
+def git_output(root, *args):
+    return subprocess.check_output(
+        ["git", *args], cwd=root, text=True, stderr=subprocess.PIPE,
+    ).rstrip("\n")
+
+
+def plan_checks(root, checks, base, head):
+    for sha in (base, head):
+        if not re.fullmatch(r"[0-9a-fA-F]+", sha):
+            raise ValueError(f"expected a commit SHA: {sha}")
+        git_output(root, "rev-parse", "--verify", f"{sha}^{{commit}}")
+    selected = []
+    for check in checks:
+        diff = subprocess.run(
+            ["git", "diff", "--quiet", "--no-ext-diff", "--no-textconv",
+             f"{base}...{head}", "--", *[f":(glob){path}" for path in check.paths]],
+            cwd=root, text=True, capture_output=True,
+        )
+        if diff.returncode == 1:
+            selected.append(check.name)
+        elif diff.returncode != 0:
+            diff.check_returncode()
+    return {"base": base, "head": head, "checks": selected}
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    commands = parser.add_subparsers(dest="command", required=True)
+    plan = commands.add_parser("plan", help="list checks triggered by a code change")
+    plan.add_argument("--base", required=True, metavar="SHA")
+    plan.add_argument("--head", required=True, metavar="SHA")
+    run = commands.add_parser("run", help="run one check or every check")
+    target = run.add_mutually_exclusive_group(required=True)
+    target.add_argument("check", nargs="?")
+    target.add_argument("--all", action="store_true")
+    args = parser.parse_args()
+    root = Path(git_output(None, "rev-parse", "--show-toplevel"))
+    checks = read_checks(root)
+    if args.command == "run":
+        if args.all:
+            failed = False
+            for check in checks:
+                status = run_check(root, check)
+                failed |= status != 0
+                print(f"{'FAIL' if status else 'PASS'} {check.name}", flush=True)
+            return int(failed)
+        for check in checks:
+            if check.name == args.check:
+                return run_check(root, check)
+        raise ValueError(f"unknown check: {args.check}")
+    print(json.dumps(plan_checks(root, checks, args.base, args.head)))
+    return 0
+
+
+if __name__ == "__main__":
+    try:
+        sys.exit(main())
+    except subprocess.CalledProcessError as error:
+        sys.exit(f"factory-verify: {(error.stderr or str(error)).strip()}")
+    except (OSError, ValueError) as error:
+        sys.exit(f"factory-verify: {error}")
