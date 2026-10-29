@@ -1,0 +1,182 @@
+#!/bin/sh
+# Read .factory/verify.toml and select or run its checks.
+set -eu
+
+usage() {
+  echo 'Usage: factory-verify plan --base <sha> --head <sha> | run <check> | run --all' >&2
+  exit 2
+}
+die() { printf 'factory-verify: %s\n' "$*" >&2; exit 1; }
+
+[ "$#" -gt 0 ] || usage
+mode=$1
+case "$mode" in
+  plan)
+    [ "$#" -eq 5 ] && [ "$2" = --base ] && [ "$4" = --head ] || usage
+    base=$3 head=$5
+    for sha in "$base" "$head"; do
+      case "$sha" in ''|*[!0-9a-fA-F]*) die "expected a commit SHA: $sha" ;; esac
+      git rev-parse --verify "$sha^{commit}" >/dev/null || exit 1
+    done
+    ;;
+  run)
+    [ "$#" -eq 2 ] || usage
+    target=$2
+    ;;
+  *) usage ;;
+esac
+
+root=$(git rev-parse --show-toplevel)
+cd "$root"
+contract=.factory/verify.toml
+[ -f "$contract" ] && [ -r "$contract" ] || die "$contract:1: cannot read contract"
+
+# Validate the whole file before emitting safely quoted shell function calls.
+parsed=$(LC_ALL=C awk '
+  function error(message) {
+    print FILENAME ":" (FNR ? FNR : 1) ": " message
+    failed = 1
+    exit 1
+  }
+  function trim() { sub(/^[ \t\r]+/, "", rest) }
+  function endline() {
+    trim()
+    if (rest != "" && substr(rest, 1, 1) != "#") error("unexpected syntax")
+  }
+  function string(    value, c, escape) {
+    trim()
+    if (substr(rest, 1, 1) != "\"") error("expected a double-quoted string")
+    rest = substr(rest, 2)
+    value = ""
+    while (length(rest)) {
+      c = substr(rest, 1, 1)
+      rest = substr(rest, 2)
+      if (c == "\"") return value
+      if (c != "\t" && c ~ /[[:cntrl:]]/) error("control character in string")
+      if (c == "\\") {
+        # The contract supports common escapes, but not Unicode escapes.
+        escape = substr(rest, 1, 1)
+        rest = substr(rest, 2)
+        if (escape == "\"" || escape == "\\") c = escape
+        else if (escape == "b") c = "\b"
+        else if (escape == "t") c = "\t"
+        else if (escape == "n") c = "\n"
+        else if (escape == "f") c = "\f"
+        else if (escape == "r") c = "\r"
+        else error("unsupported string escape")
+      }
+      value = value c
+    }
+    error("unterminated string; values must fit on one line")
+  }
+  function quote(value,    result, i, c, sq) {
+    sq = sprintf("%c", 39)
+    result = sq
+    for (i = 1; i <= length(value); i++) {
+      c = substr(value, i, 1)
+      result = result (c == sq ? sq "\\" sq sq : c)
+    }
+    return result sq
+  }
+  {
+    rest = $0
+    trim()
+    if (rest == "" || substr(rest, 1, 1) == "#") next
+    if (rest ~ /^\[checks\.[a-z0-9]+(-[a-z0-9]+)*\]/) {
+      name = rest
+      sub(/^\[checks\./, "", name)
+      sub(/\].*$/, "", name)
+      sub(/^[^]]*\]/, "", rest)
+      endline()
+      if (name in lines) error("duplicate check " name)
+      order[++count] = name
+      lines[name] = FNR
+      next
+    }
+    if (rest !~ /^(version|run|paths)[ \t]*=/) error("unsupported key or table")
+    key = rest
+    sub(/[ \t]*=.*/, "", key)
+    sub(/^[^=]*=[ \t]*/, "", rest)
+    if (key == "version") {
+      if (name != "" || version++) error("version must appear once before checks")
+      if (rest !~ /^1([ \t\r#]|$)/) error("expected version = 1")
+      rest = substr(rest, 2)
+      endline()
+    } else {
+      if (name == "") error("check field outside a check table")
+      if (seen[name, key]++) error("duplicate " key)
+      if (key == "run") {
+        runs[name] = string()
+      } else {
+        if (substr(rest, 1, 1) != "[") error("expected a one-line paths array")
+        rest = substr(rest, 2)
+        while (1) {
+          path = string()
+          if (path == "") error("trigger path must not be empty")
+          paths[name] = paths[name] " " quote(":(glob)" path)
+          trim()
+          if (substr(rest, 1, 1) == "]") break
+          if (substr(rest, 1, 1) != ",") error("expected comma or closing bracket")
+          rest = substr(rest, 2)
+          trim()
+          if (substr(rest, 1, 1) == "]") break
+        }
+        rest = substr(rest, 2)
+      }
+      endline()
+    }
+  }
+  END {
+    if (failed) exit 1
+    if (!version) error("missing version = 1")
+    for (i = 1; i <= count; i++) {
+      name = order[i]
+      if (!seen[name, "run"] || !seen[name, "paths"]) {
+        FNR = lines[name]
+        error("check " name " requires run and non-empty paths")
+      }
+    }
+    for (i = 1; i <= count; i++) {
+      name = order[i]
+      print "check " quote(name) " " quote(runs[name]) paths[name]
+    }
+  }
+' "$contract") || { printf '%s\n' "$parsed" >&2; exit 1; }
+
+selected=
+separator=
+found=0
+result=0
+check() {
+  name=$1
+  command=$2
+  shift 2
+  if [ "$mode" = run ]; then
+    if [ "$target" = --all ]; then
+      if sh -c "$command"; then
+        printf 'PASS %s\n' "$name"
+      else
+        printf 'FAIL %s\n' "$name"
+        result=1
+      fi
+    elif [ "$target" = "$name" ]; then
+      found=1
+      sh -c "$command" || exit "$?"
+    fi
+    return
+  fi
+  if git diff --quiet --no-ext-diff --no-textconv "$base...$head" -- "$@"; then
+    return
+  else
+    status=$?
+    [ "$status" -eq 1 ] || exit "$status"
+  fi
+  selected="$selected$separator\"$name\""
+  separator=,
+}
+eval "$parsed"
+if [ "$mode" = run ]; then
+  [ "$target" = --all ] || [ "$found" -eq 1 ] || die "unknown check: $target"
+  exit "$result"
+fi
+printf '{"base":"%s","head":"%s","checks":[%s]}\n' "$base" "$head" "$selected"
