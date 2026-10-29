@@ -200,7 +200,7 @@ Not used. Leave every issue at **No priority**.
 
 ## Tool stack
 
-A Linear document lists the services {{workspace}} uses. **(default)** marks the one new products use when a row offers a choice. Read it before choosing infrastructure for a product.
+A Linear document lists the services {{workspace}} uses. **(default)** marks the one new products use when a row offers a choice. A linked service has its own page with setup details. Read it before choosing infrastructure for a product.
 
 - **Document:** {{tool stack}}.
 
