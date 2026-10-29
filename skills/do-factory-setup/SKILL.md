@@ -1,6 +1,6 @@
 ---
 name: do-factory-setup
-description: Set up a repo for the factory skills. Writes the repo's values-only tracker doc (`docs/issue-tracker.md`) from Linear and a fixed template, asking only what neither settles. It points AGENTS.md at it, writes the README's non-developer intro if it has none, and installs the dev-port convention in a repo with a dev server. Re-running fills gaps only. It ends by offering a draft PR of what it wrote.
+description: Set up a repo for the factory skills. Writes the repo's values-only tracker doc (`docs/issue-tracker.md`) from Linear and a fixed template, asking only what neither settles. It points AGENTS.md at it, fills in any missing parts of the README's non-developer intro, and installs the dev-port convention in a repo with a dev server. Re-running fills gaps only. It ends by offering a draft PR of what it wrote.
 disable-model-invocation: true
 ---
 
@@ -19,7 +19,7 @@ Use the Linear MCP server for every read (in an Orca workspace, `orca linear` al
 1. **Tracker doc path:** if `AGENTS.md` names a tracker doc, use that path. Otherwise use `docs/issue-tracker.md`.
 2. **Existing doc:** if it exists, read it. Every value already in it is settled: you never overwrite it, only fill gaps. A **gap** is a template heading that is missing or empty, or a line starting `TODO:`.
 3. **AGENTS.md:** note whether it links the tracker doc.
-4. **README:** read `README.md`, if any, and note whether it opens with a non-developer intro (see step 5).
+4. **README:** read `README.md`, if any, and note which parts of the intro it has, using [step 5](#5-readme-intro)'s check.
 5. **Dev server:** read the `dev` script in the root `package.json` (the workspace root's, in a monorepo), `scripts/dev-port`, and `orca.yaml`. No `package.json` or no `dev` script means no dev server: skip [Dev ports](#6-dev-ports).
 6. **Working tree:** note the current branch and which files `git status` already shows as changed, so [Finish](#7-finish) can tell setup's changes from the user's.
 7. **Setup version:** the doc's `**Setup version:**` line records which version of this template wrote it; this skill's version is the one in its template. The same version means fill gaps only. A doc with no such line predates versioning: treat it as `2026-10-25` and add the line as a gap. A doc with a newer version than the skill means the skill is out of date: stop and tell the user to update the factory skills.
@@ -71,14 +71,21 @@ Don't commit yet; [Finish](#7-finish) offers that.
 
 ## 5. README intro
 
-Skip this step if `README.md` already opens with an intro for non-developers: a plain description of what the product does and who it's for, before any setup or code.
-
-Otherwise, write one at the top of the README, above any developer sections, which you leave as they are. It has a loose, fixed shape, plain headings and no machine markers:
+The README opens with an intro for non-developers. It has a loose, fixed shape, plain headings and no machine markers:
 
 1. **Name and one-line pitch:** the `#` title, then one sentence on what it is.
-2. **What it does:** a short paragraph or a few bullets, in plain words.
-3. **Who it's for:** one short paragraph.
-4. **Links:** to deeper docs in the repo (setup, contributing, license).
+2. **What it does:** a `## What it does` section: a short paragraph or a few bullets, in plain words.
+3. **Who it's for:** a `## Who it's for` section: one short paragraph.
+4. **Links:** a section of links to deeper docs in the repo (setup, contributing, license).
+
+Check each part by structure, never by judging the wording:
+
+- **Title:** the first non-blank line is a `#` heading.
+- **Pitch:** the next non-blank block after the title is a plain paragraph, not a heading, list or code.
+- **What it does** and **Who it's for:** a `##` heading with that text, ignoring case and straight or curly apostrophes.
+- **Links:** a `##` heading, before any setup or code, whose section is only a list of links.
+
+Skip this step if the README has the title, pitch, What it does and Who it's for. Otherwise write the missing parts, Links included if it has none, in the shape's order, above any developer sections. Keep the parts already there as they are, and leave developer sections alone. With no `README.md`, write the whole intro.
 
 Draft it from the repo itself (code, existing docs, the product's initiative description). If you can't tell what the product does or who it's for, ask in step 3.
 
