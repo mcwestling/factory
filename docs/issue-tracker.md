@@ -57,6 +57,12 @@ Not used. Leave every issue at **No priority**.
 
 - **Implementation issues:** `Clear issue` (team-scoped).
 
+## Stack defaults
+
+A Linear document holds product stack defaults, such as the Postgres host. Read it before choosing infrastructure for a product.
+
+- **Document:** [Stack defaults](https://linear.app/mcwestling/document/stack-defaults-c6582b081dcf).
+
 ## Initiatives
 
 Each product has an initiative with the same name as its Product label. Its description opens with a `Repo:` line; see [Repo routing](#repo-routing). Company work has no product initiative.

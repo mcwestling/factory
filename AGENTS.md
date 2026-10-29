@@ -8,7 +8,7 @@ The workspace values the skills read are in [`docs/issue-tracker.md`](docs/issue
 
 ## Stack defaults
 
-See [`docs/stack-defaults.md`](docs/stack-defaults.md) for product stack defaults.
+Product stack defaults live in Linear. [`docs/issue-tracker.md`](docs/issue-tracker.md#stack-defaults) links the document.
 
 ## Where things go
 
