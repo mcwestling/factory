@@ -6,6 +6,10 @@ Factory holds workflow skills and, later, the code, contracts and configs behind
 
 The workspace values the skills read are in [`docs/issue-tracker.md`](docs/issue-tracker.md).
 
+## Stack defaults
+
+See [`docs/stack-defaults.md`](docs/stack-defaults.md) for product stack defaults.
+
 ## Where things go
 
 The repo is organised by kind of thing. Add a folder only when its first file lands; never commit empty folders.
