@@ -33,7 +33,7 @@ Read in parallel:
 - **Initiatives:** `list_initiatives`, with each description's first line.
 - **Views:** `list_custom_views`.
 - **Templates:** `list_templates` for the team, type `issue`.
-- **Stack defaults:** `list_documents` with query `Stack defaults`.
+- **Tool stack:** `list_documents` with query `Tool Stack`.
 - **Models:** fetch each page under the template's Sources, following redirects, and check every model in the template's table is still listed.
 
 ## 3. Ask, once
@@ -130,7 +130,7 @@ Slots are `{{…}}`. Fill them from Linear; everything else is copied exactly, i
 - `{{decision labels}}`: the team's `wayfinder:` labels that exist, in this order: `wayfinder:research`, `wayfinder:grilling`, `wayfinder:prototype`, `wayfinder:task`. Each in backticks, comma-separated.
 - `{{retired labels}}`: in this order, comma-separated: the retired labels among `ready-for-agent`, `ready-for-human`, `needs-triage`, `needs-info`, `wontfix`, `wayfinder:map` (in that order); then each retired label group as "the `<name>` group"; then retired Dispatch target labels, alphabetically, as "and the `A`, `B` and `C` dispatch targets".
 - `{{template}}`: the one team issue template whose name or description says "implementation", as `` `<name>` (team-scoped) `` or `` `<name>` (workspace) ``. If the team has no issue templates, write `None. Agents write implementation issues without a Linear template` and don't ask. If none matches or several do, use the user's answer from step 3: the template they picked, or the `None` line.
-- `{{stack defaults}}`: the Linear document titled exactly `Stack defaults`, as `[Stack defaults](<url>)`. If there is none, write `None yet` and don't ask.
+- `{{tool stack}}`: the Linear document titled exactly `Tool Stack`, as `[Tool Stack](<url>)`. If there is none, write `None yet` and don't ask.
 - **Dispatch target rows:** one row per active label in the Dispatch target group, in this table's order, then any others with the meaning the user gave in step 3.
 
   | Label           | Use it when                                                                      |
@@ -198,11 +198,11 @@ Not used. Leave every issue at **No priority**.
 
 - **Implementation issues:** {{template}}.
 
-## Stack defaults
+## Tool stack
 
-A Linear document holds product stack defaults, such as the Postgres host. Read it before choosing infrastructure for a product.
+A Linear document lists the services {{workspace}} uses. **(default)** marks the one new products use when a row offers a choice. Read it before choosing infrastructure for a product.
 
-- **Document:** {{stack defaults}}.
+- **Document:** {{tool stack}}.
 
 ## Initiatives
 

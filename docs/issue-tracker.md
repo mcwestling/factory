@@ -57,11 +57,11 @@ Not used. Leave every issue at **No priority**.
 
 - **Implementation issues:** `Clear issue` (team-scoped).
 
-## Stack defaults
+## Tool stack
 
-A Linear document holds product stack defaults, such as the Postgres host. Read it before choosing infrastructure for a product.
+A Linear document lists the services McWestling uses. **(default)** marks the one new products use when a row offers a choice. Read it before choosing infrastructure for a product.
 
-- **Document:** [Stack defaults](https://linear.app/mcwestling/document/stack-defaults-c6582b081dcf).
+- **Document:** [Tool Stack](https://linear.app/mcwestling/document/tool-stack-aefb0d3bca48).
 
 ## Initiatives
 

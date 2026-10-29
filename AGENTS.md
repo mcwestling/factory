@@ -6,9 +6,9 @@ Factory holds workflow skills and, later, the code, contracts and configs behind
 
 The workspace values the skills read are in [`docs/issue-tracker.md`](docs/issue-tracker.md).
 
-## Stack defaults
+## Tool stack
 
-Product stack defaults live in Linear. [`docs/issue-tracker.md`](docs/issue-tracker.md#stack-defaults) links the document.
+The tool stack and its defaults live in Linear. [`docs/issue-tracker.md`](docs/issue-tracker.md#tool-stack) links the document.
 
 ## Where things go
 
