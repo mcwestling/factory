@@ -57,6 +57,12 @@ Not used. Leave every issue at **No priority**.
 
 - **Implementation issues:** `Clear issue` (team-scoped).
 
+## Tool stack
+
+A Linear document lists the services McWestling uses. **(default)** marks the one new products use when a row offers a choice. A linked service has its own page with setup details. Read it before choosing infrastructure for a product.
+
+- **Document:** [Tool Stack](https://linear.app/mcwestling/document/tool-stack-aefb0d3bca48).
+
 ## Initiatives
 
 Each product has an initiative with the same name as its Product label. Its description opens with a `Repo:` line; see [Repo routing](#repo-routing). Company work has no product initiative.
