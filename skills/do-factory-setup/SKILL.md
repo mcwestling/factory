@@ -1,6 +1,6 @@
 ---
 name: do-factory-setup
-description: Set up a repo for the factory skills. Writes the repo's values-only tracker doc (`docs/issue-tracker.md`) from Linear and a fixed template, asking only what neither settles. It points AGENTS.md at it, writes the README's non-developer intro if it has none, and installs the dev-port convention in a repo with a dev server. Re-running fills gaps only.
+description: Set up a repo for the factory skills. Writes the repo's values-only tracker doc (`docs/issue-tracker.md`) from Linear and a fixed template, asking only what neither settles. It points AGENTS.md at it, writes the README's non-developer intro if it has none, and installs the dev-port convention in a repo with a dev server. Re-running fills gaps only. It ends by offering a draft PR of what it wrote.
 disable-model-invocation: true
 ---
 
@@ -8,7 +8,7 @@ The other factory skills (`do-post-its`, `do-triage`, `do-refine`, `do-implement
 
 Setup is opinionated and deterministic: the same Linear workspace always gives the same doc. The doc is the [template](#template) below, copied verbatim, with only its `{{…}}` slots filled from Linear. Never reword, reorder or add to the template's text.
 
-The run ends in one of two ways: one round of easy questions, or "Looks good, we're set up!" Never end with a list of notes for the user to parse.
+The run asks at most one round of easy questions, then ends with "Looks good, we're set up!" and, when it wrote files, an offer to open a draft PR. Never end with a list of notes for the user to parse.
 
 ## Linear
 
@@ -21,7 +21,8 @@ Use the Linear MCP server for every read (in an Orca workspace, `orca linear` al
 3. **AGENTS.md:** note whether it links the tracker doc.
 4. **README:** read `README.md`, if any, and note whether it opens with a non-developer intro (see step 5).
 5. **Dev server:** read the `dev` script in the root `package.json` (the workspace root's, in a monorepo), `scripts/dev-port`, and `orca.yaml`. No `package.json` or no `dev` script means no dev server: skip [Dev ports](#6-dev-ports).
-6. **Setup version:** the doc's `**Setup version:**` line records which version of this template wrote it; this skill's version is the one in its template. The same version means fill gaps only. A doc with no such line predates versioning: treat it as `2026-10-25` and add the line as a gap. A doc with a newer version than the skill means the skill is out of date: stop and tell the user to update the factory skills.
+6. **Working tree:** note the current branch and which files `git status` already shows as changed, so [Finish](#7-finish) can tell setup's changes from the user's.
+7. **Setup version:** the doc's `**Setup version:**` line records which version of this template wrote it; this skill's version is the one in its template. The same version means fill gaps only. A doc with no such line predates versioning: treat it as `2026-10-25` and add the line as a gap. A doc with a newer version than the skill means the skill is out of date: stop and tell the user to update the factory skills.
 
 ## 2. Read Linear
 
@@ -66,7 +67,7 @@ If the user skips a question that fills a slot, write `TODO:` and the question i
 
 3. **Linear:** make the changes the user picked in step 3, and nothing else.
 
-Don't commit unless asked.
+Don't commit yet; [Finish](#7-finish) offers that.
 
 ## 5. README intro
 
@@ -107,7 +108,18 @@ Skip this step if step 1 found no dev server. Otherwise do each part that isn't 
 
 ## 7. Finish
 
-Say "Looks good, we're set up!". If you wrote anything, add one line naming the files, so the user can review them with `git diff`. Add a few words if dev ports were skipped for having no dev server, or if you replaced a `scripts/dev-port` that had drifted. Nothing else.
+Say "Looks good, we're set up!". Add a few words if dev ports were skipped for having no dev server, or if you replaced a `scripts/dev-port` that had drifted. If you wrote nothing, stop there.
+
+If you wrote files, name them in one line, then ask once (AskUserQuestion): **Open a draft PR** (recommended) or **Leave the changes for me**. Leaving them ends the run with the working tree as it is, for the user to review with `git diff`.
+
+To open the PR:
+
+1. **Branch:** if the current branch isn't the default branch, commit there. Otherwise create a branch from it, named per the tracker doc's **Pull requests** heading; when that rule needs an issue (like a Linear branch name), use `factory-setup`. Never commit or push to the default branch.
+2. **Commit only setup's files:** stage them by path. A file the user had already changed before the run (step 1) stays out, with its setup edits: say which, so they can commit it themselves. Leave every other uncommitted change as it was, and say so if there were any. If that leaves nothing to commit, say so and stop. Use a plain imperative subject, like `Set up the factory tracker doc`.
+3. **Verify and push:** run the repo's full check if `AGENTS.md` names one, and push only if it passes.
+4. **Draft PR:** open it as a draft, titled per **Pull requests**; with no issue id, use the commit subject. The body says what setup wrote, in a few lines. Never mark it ready or merge it.
+
+End with the PR link.
 
 ## Template
 
